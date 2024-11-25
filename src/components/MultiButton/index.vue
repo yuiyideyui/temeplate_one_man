@@ -1,108 +1,144 @@
 <template>
   <div class="multiButton-box" :style="{ width: width, height: height }">
-    <div class="multiButton-container" style="width: 100%;" @mouseenter="showBubble" @mouseleave="hideBubble">
+    <div
+      class="multiButton-container"
+      style="width: 100%"
+      @mouseenter="showBubble"
+      @mouseleave="hideBubble"
+    >
       <!-- 图片与标题 -->
       <div class="com-Main">
-        <img class="image" :class="{ grayscale: isGrayscale }" :src="comImage" alt="comImage"
-          @click="toggleGrayscale" />
+        <img
+          class="image"
+          :class="{ grayscale: isGrayscale }"
+          :src="comImage"
+          alt="comImage"
+          @click="toggleGrayscale"
+        />
         <p class="title">{{ comTitle }}</p>
 
         <!-- 气泡 -->
-        
-        <div class="custom-popover" :style="{ maxHeight: showPopover ? height : '100%' }" :class="{ show: showPopover }">
-         
-          <div v-for="(item, index) in layerList" :key="index" class="layer-item">
+
+        <div
+          class="custom-popover"
+          :style="{ maxHeight: showPopover ? height : '100%' }"
+          :class="{ show: showPopover }"
+        >
+          <div
+            v-for="(item, index) in layerList"
+            :key="index"
+            class="layer-item"
+          >
             <!-- 父级 -->
             <div class="parent-item">
-    
-              <input class="checkbox" type="checkbox" v-model="item.checked" @change="handleParentCheckChange(item.id)" />
-              <span class="child-show" v-show="item.children" @click="toggleChildrenVisibility(item)">{{ item.isChildVisible?'-':'+' }}</span>
+              <input
+                class="checkbox"
+                type="checkbox"
+                v-model="item.checked"
+                @change="handleParentCheckChange(item.id)"
+              />
+              <span
+                class="child-show"
+                v-show="item.children"
+                @click="toggleChildrenVisibility(item)"
+                >{{ item.isChildVisible ? '-' : '+' }}</span
+              >
               <span class="layer-name">{{ item.layerName }}</span>
-
-             
             </div>
             <!-- 子级 -->
             <transition name="fade-slide">
-            <div  v-if="item.isChildVisible && item.children && item.children.length > 0"  class="children-list">
-              <div v-for="(child, childIndex) in item.children" :key="childIndex" class="child-item">
-                <input class="checkbox" type="checkbox" v-model="child.checked"
-                  @change="handleChildCheckChange(item, child)" />
-                <span>{{ child.layerName }}</span>
+              <div
+                v-if="
+                  item.isChildVisible &&
+                  item.children &&
+                  item.children.length > 0
+                "
+                class="children-list"
+              >
+                <div
+                  v-for="(child, childIndex) in item.children"
+                  :key="childIndex"
+                  class="child-item"
+                >
+                  <input
+                    class="checkbox"
+                    type="checkbox"
+                    v-model="child.checked"
+                    @change="handleChildCheckChange(item, child)"
+                  />
+                  <span>{{ child.layerName }}</span>
+                </div>
               </div>
-            </div>
-          </transition>
+            </transition>
           </div>
         </div>
-     
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, type PropType ,defineEmits} from "vue";
+import { ref, type PropType, defineEmits } from 'vue'
 
 // 接收 props
 defineProps({
-  comImage: { type: String, default: "" },
-  comTitle: { type: String, default: "暂无标题" },
-  width: { type: String, default: "500px" },
-  height: { type: String, default: "500px" },
+  comImage: { type: String, default: '' },
+  comTitle: { type: String, default: '暂无标题' },
+  width: { type: String, default: '500px' },
+  height: { type: String, default: '500px' },
   layerList: { type: Array as PropType<PopoverList[]>, default: () => [] },
-});
+})
 interface PopoverList {
-  id: string;
-  layerName: string;
-  checked?:boolean;
-  children?: Array<any>;
-  isShow: boolean;
-  type: number;
-  img: string;
-  imgType: number;
-  isChildVisible?:boolean;
+  id: string
+  layerName: string
+  checked?: boolean
+  children?: Array<any>
+  isShow: boolean
+  type: number
+  img: string
+  imgType: number
+  isChildVisible?: boolean
 }
 // 状态管理
-const isGrayscale = ref(true); // 图片是否黑白
-const showPopover = ref(false); // 气泡显示状态
-let hideTimer: number | null = null; // 定时器 ID
+const isGrayscale = ref(true) // 图片是否黑白
+const showPopover = ref(false) // 气泡显示状态
+let hideTimer: number | null = null // 定时器 ID
 
 // 切换图片黑白
 const toggleGrayscale = () => {
-  isGrayscale.value = !isGrayscale.value;
-};
+  isGrayscale.value = !isGrayscale.value
+}
 
 // 显示气泡（仅在彩色状态）
 const showBubble = () => {
   if (!isGrayscale.value) {
     if (hideTimer) {
-      clearTimeout(hideTimer); // 清除隐藏定时器
-      hideTimer = null;
+      clearTimeout(hideTimer) // 清除隐藏定时器
+      hideTimer = null
     }
-    showPopover.value = true;
+    showPopover.value = true
   }
-};
+}
 
 // 隐藏气泡
 const hideBubble = () => {
   hideTimer = setTimeout(() => {
-    showPopover.value = false;
-  }, 200); // 延迟隐藏，避免鼠标快速移动导致闪烁
-};
+    showPopover.value = false
+  }, 200) // 延迟隐藏，避免鼠标快速移动导致闪烁
+}
 
-const emit = defineEmits();
-const handleParentCheckChange = (item:any) => {
-  emit('parentChecked', item);
-};
-const handleChildCheckChange = (item:any,child:any)=>{
-  emit('childChecked', { item, child });
-  
+const emit = defineEmits()
+const handleParentCheckChange = (item: any) => {
+  emit('parentChecked', item)
+}
+const handleChildCheckChange = (item: any, child: any) => {
+  emit('childChecked', { item, child })
 }
 
 const toggleChildrenVisibility = (item: PopoverList) => {
-  item.isChildVisible = !item.isChildVisible; // 切换子级的可见性
-};
+  item.isChildVisible = !item.isChildVisible // 切换子级的可见性
+}
 </script>
-
 
 <style scoped lang="less">
 .multiButton-box {
@@ -170,26 +206,24 @@ const toggleChildrenVisibility = (item: PopoverList) => {
         flex-direction: column;
         /* 子项在父项下方 */
         margin-bottom: 10px;
-        
+
         .parent-item {
           display: flex;
           align-items: center;
           /* 垂直居中 */
           margin-bottom: 5px;
           position: relative;
-          .child-show{
+          .child-show {
             cursor: pointer;
-             
+
             position: absolute;
             left: 20px;
 
             top: 50%;
             transform: translateY(-50%);
-            
+
             font-weight: bold;
             color: #007bff;
-
-           
           }
 
           .checkbox {
@@ -209,12 +243,12 @@ const toggleChildrenVisibility = (item: PopoverList) => {
           flex-direction: column;
           margin-left: 30px;
           /* 子级缩进 */
-         
+
           .child-item {
             display: flex;
             align-items: center;
             margin-bottom: 5px;
-            
+
             .checkbox {
               flex-shrink: 0;
               width: 20px;
@@ -228,16 +262,15 @@ const toggleChildrenVisibility = (item: PopoverList) => {
         }
       }
     }
-
-
   }
 }
 
- 
 /* 定义子项显示/隐藏的动画 */
 .fade-slide-enter-active,
 .fade-slide-leave-active {
-  transition: transform 0.3s ease, opacity 0.4s ease-in-out;
+  transition:
+    transform 0.3s ease,
+    opacity 0.4s ease-in-out;
 }
 
 .fade-slide-enter-from {
