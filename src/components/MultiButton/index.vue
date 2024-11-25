@@ -8,7 +8,7 @@
 
         <!-- 气泡 -->
 
-        <div class="custom-popover" :style="{ maxHeight: showPopover ? height : '100%' }"
+        <div class="custom-popover"  
           :class="{ show: showPopover }">
 
           <div v-for="(item, index) in layerList" :key="index" class="layer-item">
@@ -76,7 +76,7 @@ const toggleGrayscale = () => {
 };
 
 // 显示气泡（仅在彩色状态）
-const showBubble = () => {
+const showBubble = (popoverElement:any) => {
   if (!isGrayscale.value) {
     if (hideTimer) {
       clearTimeout(hideTimer); // 清除隐藏定时器
@@ -89,10 +89,18 @@ const showBubble = () => {
       showPopover.value = true;
     }, 350);  
   }
+
+
+  // 获取目标弹窗元素
+  if (popoverElement) {
+    const scrollHeight = popoverElement.scrollHeight; // 获取内容实际高度
+    popoverElement.style.maxHeight = `${scrollHeight}px`; // 动态设置 max-height
+    popoverElement.classList.add('show'); // 添加显示类，触发动画
+  }
 };
 
 // 隐藏气泡
-const hideBubble = () => {
+const hideBubble = (popoverElement:any) => {
   if (hoverTimer) {
     clearTimeout(hoverTimer); // 清除悬停定时器，防止鼠标快速离开后仍触发展示
     hoverTimer = null;
@@ -100,6 +108,14 @@ const hideBubble = () => {
   hideTimer = setTimeout(() => {
     showPopover.value = false;
   }, 200); // 延迟隐藏，避免闪烁
+
+   // 隐藏时复位 max-height
+   if (popoverElement) {
+    popoverElement.classList.remove('show'); // 移除显示类
+    setTimeout(() => {
+      popoverElement.style.maxHeight = '0'; // 归零高度，触发收缩动画
+    }, 0);
+  }
 };
 
 const emit = defineEmits();
@@ -125,7 +141,7 @@ const toggleChildrenVisibility = (item: PopoverList) => {
   justify-content: center;
   width: 100%;
   height: 100%;
-  box-sizing: border-box;
+   
 }
 
 .multiButton-container {
@@ -160,42 +176,36 @@ const toggleChildrenVisibility = (item: PopoverList) => {
     }
 
     .custom-popover {
-      font-family: Alibaba PuHuiTi, Alibaba PuHuiTi;
-      position: absolute;
-      bottom: 100%;
-      /* 气泡在图片上方 */
-      left: 50%;
-      transform: translateX(-50%);
-      background: #000D2F;
-      // padding: 10px;
-      border: 1px solid #ddd;
-      color: #FFFFFF;
-      border-radius: 5px;
-      box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
-      opacity: 0;
-      max-height: 0;
-      overflow: hidden;
-      transition: all 0.5s ease;
-      width: 100%;
-      font-size: 14px;
-      font-weight: 200;
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      align-items: flex-start;
-      white-space: nowrap;
-      /* 禁止换行 */
-      overflow: visible;
-      /* 显示所有内容 */
-      display: block;
-      /* 确保弹出框按内容撑开 */
-      width: 106px;
-      // padding: 10px;
-      border: 0.5px solid #33D4E9;
-      padding: 10px 12px 13px 12px;
+      box-sizing: border-box;
+  font-family: Alibaba PuHuiTi, Alibaba PuHuiTi;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px); /* 初始位置稍微偏移 */
+  background: #000D2F;
+  border: 0.5px solid #33D4E9;
+  border-radius: 5px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 10px 12px 13px 12px;
+  color: #FFFFFF;
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.5s ease, transform 0.5s ease, max-height 0.5s ease;
+  font-size: 14px;
+  font-weight: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  white-space: nowrap;
+  width: 106px;
+     
+ 
+  
       &.show {
         opacity: 1;
-        max-height: 200px;
+        transform: translateX(-50%) translateY(0); /* 恢复到正常位置 */
+  max-height: 500px; /* 设置足够大以适应内容高度 */
       }
 
       .checkbox {
