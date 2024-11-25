@@ -8,8 +8,6 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     CenterPlane: typeof import('./src/components/plane/centerPlane.vue')['default']
-    ElImage: typeof import('element-plus/es')['ElImage']
-    ElPopover: typeof import('element-plus/es')['ElPopover']
     LeftPlane: typeof import('./src/components/plane/leftPlane.vue')['default']
     MultiButton: typeof import('./src/components/MultiButton/index.vue')['default']
     RightPlane: typeof import('./src/components/plane/rightPlane.vue')['default']

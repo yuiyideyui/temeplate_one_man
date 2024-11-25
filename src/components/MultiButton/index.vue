@@ -1,15 +1,15 @@
 <template>
-  <div class="multiButton-box" :style="{ width: width, height: height }">
+  <div class="multiButton-box" >
     <div class="multiButton-container" style="width: 100%;" @mouseenter="showBubble" @mouseleave="hideBubble">
       <!-- 图片与标题 -->
       <div class="com-Main">
-        <img class="image" :class="{ grayscale: isGrayscale }" :src="comImage" alt="comImage"
+        <img class="image" :src="isGrayscale?defaultImage:selectImage" alt="comImage"
           @click="toggleGrayscale" />
         <p class="title">{{ comTitle }}</p>
 
         <!-- 气泡 -->
         
-        <div class="custom-popover" :style="{ maxHeight: showPopover ? height : '100%' }" :class="{ show: showPopover }">
+        <div class="custom-popover" :style="{  maxHeight: showPopover ? height : '100%' }" :class="{ show: showPopover }">
          
           <div v-for="(item, index) in layerList" :key="index" class="layer-item">
             <!-- 父级 -->
@@ -19,7 +19,6 @@
               <span class="child-show" v-show="item.children" @click="toggleChildrenVisibility(item)">{{ item.isChildVisible?'-':'+' }}</span>
               <span class="layer-name">{{ item.layerName }}</span>
 
-             
             </div>
             <!-- 子级 -->
             <transition name="fade-slide">
@@ -44,11 +43,14 @@ import { ref, type PropType ,defineEmits} from "vue";
 
 // 接收 props
 defineProps({
-  comImage: { type: String, default: "" },
+
+  defaultImage: { type: String, default: "" },
+  selectImage:{type:String,default:''},
   comTitle: { type: String, default: "暂无标题" },
   width: { type: String, default: "500px" },
   height: { type: String, default: "500px" },
   layerList: { type: Array as PropType<PopoverList[]>, default: () => [] },
+  
 });
 interface PopoverList {
   id: string;
@@ -64,9 +66,9 @@ interface PopoverList {
 // 状态管理
 const isGrayscale = ref(true); // 图片是否黑白
 const showPopover = ref(false); // 气泡显示状态
-let hideTimer: number | null = null; // 定时器 ID
-
-// 切换图片黑白
+let hoverTimer: number | null = null; // 定时器 ID
+ let hideTimer: number | null = null;
+ 
 const toggleGrayscale = () => {
   isGrayscale.value = !isGrayscale.value;
 };
@@ -78,15 +80,24 @@ const showBubble = () => {
       clearTimeout(hideTimer); // 清除隐藏定时器
       hideTimer = null;
     }
-    showPopover.value = true;
+    if (hoverTimer) {
+      clearTimeout(hoverTimer); // 清除悬停定时器，避免重复触发
+    }
+    hoverTimer = setTimeout(() => {
+      showPopover.value = true;
+    }, 500); // 延迟 0.5 秒后显示气泡
   }
 };
 
 // 隐藏气泡
 const hideBubble = () => {
+  if (hoverTimer) {
+    clearTimeout(hoverTimer); // 清除悬停定时器，防止鼠标快速离开后仍触发展示
+    hoverTimer = null;
+  }
   hideTimer = setTimeout(() => {
     showPopover.value = false;
-  }, 200); // 延迟隐藏，避免鼠标快速移动导致闪烁
+  }, 200); // 延迟隐藏，避免闪烁
 };
 
 const emit = defineEmits();
@@ -112,6 +123,7 @@ const toggleChildrenVisibility = (item: PopoverList) => {
   justify-content: center;
   width: 100%;
   height: 100%;
+  box-sizing: border-box;
 }
 
 .multiButton-container {
@@ -124,12 +136,13 @@ const toggleChildrenVisibility = (item: PopoverList) => {
     align-items: center;
 
     .image {
-      width: 75px;
-      height: 75px;
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
       cursor: pointer;
       transition: filter 0.3s ease;
-
+      margin-bottom: 9px;
+      z-index: 100;
       &.grayscale {
         filter: grayscale(100%);
       }
@@ -137,17 +150,23 @@ const toggleChildrenVisibility = (item: PopoverList) => {
 
     .title {
       text-align: center;
+      font-size: 13px;
+      color: #56E1FF;
+      width: 42px;
+      height: 18px;
     }
 
     .custom-popover {
+      font-family: Alibaba PuHuiTi, Alibaba PuHuiTi;
       position: absolute;
       bottom: 100%;
       /* 气泡在图片上方 */
       left: 50%;
       transform: translateX(-50%);
-      background: white;
+      background: #000D2F;
       padding: 10px;
       border: 1px solid #ddd;
+      color: #FFFFFF;
       border-radius: 5px;
       box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
       opacity: 0;
@@ -155,11 +174,17 @@ const toggleChildrenVisibility = (item: PopoverList) => {
       overflow: hidden;
       transition: all 0.5s ease;
       width: 100%;
-      font-size: 0.2em;
+      font-size: 14px;
       display: flex;
       flex-direction: column;
       align-items: stretch;
       align-items: flex-start;
+      white-space: nowrap; /* 禁止换行 */
+      overflow: visible; /* 显示所有内容 */
+      display: block; /* 确保弹出框按内容撑开 */
+      width: 106px;
+      padding:  10px;
+      border: 0.5px solid #33D4E9;
       &.show {
         opacity: 1;
         max-height: 200px;
@@ -177,6 +202,8 @@ const toggleChildrenVisibility = (item: PopoverList) => {
           /* 垂直居中 */
           margin-bottom: 5px;
           position: relative;
+          width: auto; /* 让宽度根据内容自适应 */
+          min-width: 0; /* 防止子项内容压缩父级时过小 */
           .child-show{
             cursor: pointer;
              
@@ -186,7 +213,7 @@ const toggleChildrenVisibility = (item: PopoverList) => {
             top: 50%;
             transform: translateY(-50%);
             
-            font-weight: bold;
+            
             color: #007bff;
 
            
@@ -209,16 +236,18 @@ const toggleChildrenVisibility = (item: PopoverList) => {
           flex-direction: column;
           margin-left: 30px;
           /* 子级缩进 */
-         
+          width: auto; /* 自动扩展宽度 */
           .child-item {
             display: flex;
             align-items: center;
             margin-bottom: 5px;
-            
+           
+            white-space: nowrap; /* 禁止换行 */
+            overflow: visible; /* 显示完整内容 */
             .checkbox {
               flex-shrink: 0;
               width: 20px;
-              margin-right: 10px;
+              margin-right: 5px;
             }
 
             span {
