@@ -87,7 +87,7 @@ const showBubble = () => {
     }
     hoverTimer = setTimeout(() => {
       showPopover.value = true;
-    }, 500); // 延迟 0.5 秒后显示气泡
+    }, 350);  
   }
 };
 
@@ -143,7 +143,7 @@ const toggleChildrenVisibility = (item: PopoverList) => {
       border-radius: 50%;
       cursor: pointer;
       transition: filter 0.3s ease;
-      margin-bottom: 9px;
+      margin-bottom: 8px;
       z-index: 100;
 
       &.grayscale {
@@ -167,7 +167,7 @@ const toggleChildrenVisibility = (item: PopoverList) => {
       left: 50%;
       transform: translateX(-50%);
       background: #000D2F;
-      padding: 10px;
+      // padding: 10px;
       border: 1px solid #ddd;
       color: #FFFFFF;
       border-radius: 5px;
@@ -178,6 +178,7 @@ const toggleChildrenVisibility = (item: PopoverList) => {
       transition: all 0.5s ease;
       width: 100%;
       font-size: 14px;
+      font-weight: 200;
       display: flex;
       flex-direction: column;
       align-items: stretch;
@@ -189,9 +190,9 @@ const toggleChildrenVisibility = (item: PopoverList) => {
       display: block;
       /* 确保弹出框按内容撑开 */
       width: 106px;
-      padding: 10px;
+      // padding: 10px;
       border: 0.5px solid #33D4E9;
-
+      padding: 10px 12px 13px 12px;
       &.show {
         opacity: 1;
         max-height: 200px;
@@ -231,13 +232,13 @@ const toggleChildrenVisibility = (item: PopoverList) => {
         display: flex;
         flex-direction: column;
         /* 子项在父项下方 */
-        margin-bottom: 8px;
-
+        // margin-bottom: 8px;
+        gap: 8px;
         .parent-item {
           display: flex;
           align-items: center;
           /* 垂直居中 */
-          margin-bottom: 5px;
+          margin-bottom: 8px;
           position: relative;
           width: auto;
           /* 让宽度根据内容自适应 */
