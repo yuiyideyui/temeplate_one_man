@@ -1,5 +1,5 @@
 <template>
-  <div class="multiButton-box" :style="{ width: width, height: height }">
+  <div class="multiButton-box">
     <div
       class="multiButton-container"
       style="width: 100%"
@@ -10,8 +10,7 @@
       <div class="com-Main">
         <img
           class="image"
-          :class="{ grayscale: isGrayscale }"
-          :src="comImage"
+          :src="isGrayscale ? defaultImage : selectImage"
           alt="comImage"
           @click="toggleGrayscale"
         />
@@ -19,11 +18,7 @@
 
         <!-- 气泡 -->
 
-        <div
-          class="custom-popover"
-          :style="{ maxHeight: showPopover ? height : '100%' }"
-          :class="{ show: showPopover }"
-        >
+        <div class="custom-popover" :class="{ show: showPopover }">
           <div
             v-for="(item, index) in layerList"
             :key="index"
@@ -37,12 +32,8 @@
                 v-model="item.checked"
                 @change="handleParentCheckChange(item.id)"
               />
-              <span
-                class="child-show"
-                v-show="item.children"
-                @click="toggleChildrenVisibility(item)"
-                >{{ item.isChildVisible ? '-' : '+' }}</span
-              >
+              <!-- <span class="child-show" v-show="item.children" @click="toggleChildrenVisibility(item)">{{
+                item.isChildVisible ? '-' : '+' }}</span> -->
               <span class="layer-name">{{ item.layerName }}</span>
             </div>
             <!-- 子级 -->
@@ -82,7 +73,8 @@ import { ref, type PropType, defineEmits } from 'vue'
 
 // 接收 props
 defineProps({
-  comImage: { type: String, default: '' },
+  defaultImage: { type: String, default: '' },
+  selectImage: { type: String, default: '' },
   comTitle: { type: String, default: '暂无标题' },
   width: { type: String, default: '500px' },
   height: { type: String, default: '500px' },
@@ -102,29 +94,53 @@ interface PopoverList {
 // 状态管理
 const isGrayscale = ref(true) // 图片是否黑白
 const showPopover = ref(false) // 气泡显示状态
-let hideTimer: number | null = null // 定时器 ID
+let hoverTimer: number | null = null // 定时器 ID
+let hideTimer: number | null = null
 
-// 切换图片黑白
 const toggleGrayscale = () => {
   isGrayscale.value = !isGrayscale.value
 }
 
 // 显示气泡（仅在彩色状态）
-const showBubble = () => {
+const showBubble = (popoverElement: any) => {
   if (!isGrayscale.value) {
     if (hideTimer) {
       clearTimeout(hideTimer) // 清除隐藏定时器
       hideTimer = null
     }
-    showPopover.value = true
+    if (hoverTimer) {
+      clearTimeout(hoverTimer) // 清除悬停定时器，避免重复触发
+    }
+    hoverTimer = setTimeout(() => {
+      showPopover.value = true
+    }, 350)
+  }
+
+  // 获取目标弹窗元素
+  if (popoverElement) {
+    const scrollHeight = popoverElement.scrollHeight // 获取内容实际高度
+    popoverElement.style.maxHeight = `${scrollHeight}px` // 动态设置 max-height
+    popoverElement.classList.add('show') // 添加显示类，触发动画
   }
 }
 
 // 隐藏气泡
-const hideBubble = () => {
+const hideBubble = (popoverElement: any) => {
+  if (hoverTimer) {
+    clearTimeout(hoverTimer) // 清除悬停定时器，防止鼠标快速离开后仍触发展示
+    hoverTimer = null
+  }
   hideTimer = setTimeout(() => {
     showPopover.value = false
-  }, 200) // 延迟隐藏，避免鼠标快速移动导致闪烁
+  }, 200) // 延迟隐藏，避免闪烁
+
+  // 隐藏时复位 max-height
+  if (popoverElement) {
+    popoverElement.classList.remove('show') // 移除显示类
+    setTimeout(() => {
+      popoverElement.style.maxHeight = '0' // 归零高度，触发收缩动画
+    }, 0)
+  }
 }
 
 const emit = defineEmits()
@@ -160,11 +176,13 @@ const toggleChildrenVisibility = (item: PopoverList) => {
     align-items: center;
 
     .image {
-      width: 75px;
-      height: 75px;
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
       cursor: pointer;
       transition: filter 0.3s ease;
+      margin-bottom: 8px;
+      z-index: 100;
 
       &.grayscale {
         filter: grayscale(100%);
@@ -173,63 +191,111 @@ const toggleChildrenVisibility = (item: PopoverList) => {
 
     .title {
       text-align: center;
+      font-size: 13px;
+      color: #56e1ff;
+      width: 42px;
+      height: 18px;
     }
 
     .custom-popover {
+      box-sizing: border-box;
+      font-family:
+        Alibaba PuHuiTi,
+        Alibaba PuHuiTi;
       position: absolute;
       bottom: 100%;
-      /* 气泡在图片上方 */
       left: 50%;
-      transform: translateX(-50%);
-      background: white;
-      padding: 10px;
-      border: 1px solid #ddd;
+      transform: translateX(-50%) translateY(10px); /* 初始位置稍微偏移 */
+      background: #000d2f;
+      border: 0.5px solid #33d4e9;
       border-radius: 5px;
       box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
+      padding: 10px 12px 13px 12px;
+      color: #ffffff;
       opacity: 0;
       max-height: 0;
       overflow: hidden;
-      transition: all 0.5s ease;
-      width: 100%;
-      font-size: 0.2em;
+      transition:
+        opacity 0.5s ease,
+        transform 0.5s ease,
+        max-height 0.5s ease;
+      font-size: 14px;
+      font-weight: 200;
       display: flex;
       flex-direction: column;
-      align-items: stretch;
       align-items: flex-start;
+      white-space: nowrap;
+      width: 106px;
+
       &.show {
         opacity: 1;
-        max-height: 200px;
+        transform: translateX(-50%) translateY(0); /* 恢复到正常位置 */
+        max-height: 500px; /* 设置足够大以适应内容高度 */
+      }
+
+      .checkbox {
+        appearance: none;
+        /* 隐藏默认复选框样式 */
+        background-size: contain;
+        background-repeat: no-repeat;
+        cursor: pointer;
+        width: 11px;
+        height: 11px;
+        border: 1px solid #33d4e9;
+        /* 边框颜色 */
+        border-radius: 3px;
+        background-color: #001622;
+        /* 默认背景颜色 */
+        background-size: contain;
+        background-repeat: no-repeat;
+        cursor: pointer;
+        /* 默认未选中的背景图片 */
+        background-image: url('@/assets/image/greenRoadPlanning/14.png');
+
+        &:checked {
+          /* 选中状态的背景图片 */
+          background-image: url('@/assets/image/greenRoadPlanning/15.png');
+          border-color: #33d4e9;
+          /* 选中边框颜色 */
+          background-color: #33d4e9;
+          /* 背景颜色 */
+        }
       }
 
       .layer-item {
         display: flex;
         flex-direction: column;
         /* 子项在父项下方 */
-        margin-bottom: 10px;
-
+        // margin-bottom: 8px;
+        gap: 8px;
         .parent-item {
           display: flex;
           align-items: center;
           /* 垂直居中 */
-          margin-bottom: 5px;
+          margin-bottom: 8px;
           position: relative;
+          width: auto;
+          /* 让宽度根据内容自适应 */
+          min-width: 0;
+
+          /* 防止子项内容压缩父级时过小 */
           .child-show {
             cursor: pointer;
 
             position: absolute;
-            left: 20px;
+            left: 10px;
 
             top: 50%;
             transform: translateY(-50%);
 
-            font-weight: bold;
             color: #007bff;
           }
 
           .checkbox {
             flex-shrink: 0;
-            width: 20px;
-            margin-right: 10px;
+            // width: 20px;
+            margin-right: 5px;
+            color: #001622;
           }
 
           .layer-name {
@@ -243,16 +309,23 @@ const toggleChildrenVisibility = (item: PopoverList) => {
           flex-direction: column;
           margin-left: 30px;
           /* 子级缩进 */
+          width: auto;
 
+          /* 自动扩展宽度 */
           .child-item {
             display: flex;
             align-items: center;
             margin-bottom: 5px;
 
+            white-space: nowrap;
+            /* 禁止换行 */
+            overflow: visible;
+
+            /* 显示完整内容 */
             .checkbox {
               flex-shrink: 0;
-              width: 20px;
-              margin-right: 10px;
+              // width: 20px;
+              margin-right: 5px;
             }
 
             span {
@@ -260,6 +333,40 @@ const toggleChildrenVisibility = (item: PopoverList) => {
             }
           }
         }
+
+        // input[type="checkbox"] {
+        //   appearance: none;
+        //   /* 隐藏默认复选框样式 */
+        //   width: 11px;
+        //   height: 11px;
+        //   border: 1px solid #33D4E9;
+        //   /* 边框颜色 */
+        //   border-radius: 3px;
+        //   background-color: #001622;
+        //   /* 默认背景颜色 */
+        //   cursor: pointer;
+        //   position: relative;
+
+        //   &:checked {
+        //     background-color: #33D4E9;
+        //     /* 选中背景色 */
+        //     border-color: #33D4E9;
+        //     /* 选中边框颜色 */
+
+        //     &::after {
+        //       content: '✔';
+        //       /* 自定义选中符号 */
+        //       color: #001622;
+        //       /* 勾号颜色 */
+        //       position: absolute;
+        //       top: 50%;
+        //       left: 50%;
+        //       transform: translate(-50%, -50%);
+        //       // font-size: 16px;
+        //       // font-weight: bold;
+        //     }
+        //   }
+        // }
       }
     }
   }
@@ -291,6 +398,7 @@ const toggleChildrenVisibility = (item: PopoverList) => {
 .fade-slide-leave-to {
   transform: translateY(-10px);
   opacity: 0;
-  transition-delay: 0.1s; /* 添加隐藏的延迟 */
+  transition-delay: 0.1s;
+  /* 添加隐藏的延迟 */
 }
 </style>

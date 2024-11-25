@@ -11,43 +11,52 @@
       <rightPlane></rightPlane>
     </div> 
 
-    <div class="testBox">
-      <MultiButton
+    <div class="footer-button">
+    <MultiButton
+      v-for="(button, index) in footButton"
+      :key="index"
       class="test"
       :layerList="layerList"
-      width="150px"
-      height="300px"
-      comImage="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-      comTitle="test标题"
-
+      :defaultImage="button.defaultImage"
+      :selectImage="button.selectImg"
+      :comTitle="button.comTitle"
       @parentChecked="handleParentChecked"
-      ></MultiButton>
-    </div>
+    />
+  </div>
     <div></div>
   </div>
 </template>
 <style scoped>
 .mainBox{
   position: relative;
+  box-sizing: border-box;
 }
-.testBox{
+.footer-button{
  
-  width: 300px;
-  height: 300px;
-  border: 1px solid red;
+  width: 350px;
+  height: 87px;
+  padding: 10px;
+ 
   position: absolute;
-  top: 50%;
+  bottom: 30px;
   left: 50%;
   transform: translate(-50%,-50%);
 
   display: flex;
-  flex-direction: column;
+  
   justify-content: center;
   align-items: center;
 }
  
 </style>
 <script setup lang="ts">
+import image1Default from '@/assets/image/greenRoadPlanning/7_1.png';
+import image1Select from '@/assets/image/greenRoadPlanning/7.png';
+import image2Default from '@/assets/image/greenRoadPlanning/8_1.png';
+import image2Select from '@/assets/image/greenRoadPlanning/8.png';
+ 
+import image3Default from '@/assets/image/greenRoadPlanning/9_1.png';
+import image3Select from '@/assets/image/greenRoadPlanning/9.png';
 import {ref} from "vue"
 import leftPlane from '@/components/plane/leftPlane.vue'
 import rightPlane from '@/components/plane/rightPlane.vue'
@@ -187,6 +196,26 @@ const layerList  = ref(   [
 
           ] as any,
         )
+
+const footButton = [
+{
+    comTitle: '路网',
+    defaultImage: image1Default,
+    selectImg: image1Select,
+  },
+  {
+    comTitle: '设备',
+    defaultImage: image2Default,
+    selectImg: image2Select,
+  },
+  {
+    comTitle: '交叉口',
+    defaultImage: image3Default,
+    selectImg: image3Select,
+  },
+  
+];
+
 </script>
 
 
