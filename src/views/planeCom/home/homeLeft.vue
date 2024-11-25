@@ -1,6 +1,6 @@
 <template>
   <div>
-    homeLeft
+    homeLeft1
   </div>
 </template>
 

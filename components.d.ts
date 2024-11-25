@@ -8,14 +8,12 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     CenterPlane: typeof import('./src/components/plane/centerPlane.vue')['default']
-    CesiumThreeCom: typeof import('./src/components/cesiumThreeCom/cesiumThreeCom.vue')['default']
+    ElImage: typeof import('element-plus/es')['ElImage']
+    ElPopover: typeof import('element-plus/es')['ElPopover']
     LeftPlane: typeof import('./src/components/plane/leftPlane.vue')['default']
+    MultiButton: typeof import('./src/components/MultiButton/index.vue')['default']
     RightPlane: typeof import('./src/components/plane/rightPlane.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    TestCom: typeof import('./src/components/testCom.vue')['default']
-  }
-  export interface ComponentCustomProperties {
-    vLoading: typeof import('element-plus/es')['ElLoadingDirective']
   }
 }

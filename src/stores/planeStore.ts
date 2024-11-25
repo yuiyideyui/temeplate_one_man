@@ -23,6 +23,7 @@ export const usePlaneStore = defineStore('plane', () => {
     historyPlane:[],
     nowPlane:{
       left:'home',
+      center:'home',
       right:'home'
     },
     theme:'home'

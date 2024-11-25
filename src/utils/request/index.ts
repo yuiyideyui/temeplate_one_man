@@ -40,7 +40,7 @@ request.interceptors.response.use(
       showMessage(response.status)
       return Promise.reject(response.data)
     }
-    ElMessage.error('网络连接异常,请稍后再试!')
+    // ElMessage.error('网络连接异常,请稍后再试!')
   },
 )
 
