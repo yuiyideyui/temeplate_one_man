@@ -1,5 +1,5 @@
 <template>
-  <cardCom dir="left" :width="400" :height="700">
+  <cardCom dir="left" :width="450" :height="915">
     <div>yui</div>
   </cardCom>
 </template>

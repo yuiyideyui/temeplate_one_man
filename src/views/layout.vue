@@ -1,12 +1,12 @@
 <template>
   <div id="mainBox">
-    <div class="mainBox-container">
-      <PageHeader class="pageHeader" />
-
-      <!-- <div id="topTitle" @click="testChangePlane">点击切换test</div>
-
-    <div @click="test2CahangePlane">点击切换test2</div>
-    <div @click="backPlane">backPlane</div> -->
+    <div class="mainBox-container" ref="fullEl">
+      <PageHeader
+        class="pageHeader"
+        title="关键路径识别"
+        :fullScreen="true"
+        @fullScreen_fn="fullScreen_fn"
+      />
 
       <div id="planeBox">
         <leftPlane></leftPlane>
@@ -29,39 +29,11 @@
     </div>
   </div>
 </template>
-<style scoped>
-#mainBox {
-  /* position: relative; */
-  box-sizing: border-box;
-}
-.mainBox-container {
-  position: relative;
-}
-.pageHeader {
-  position: absolute;
-  left: 50%;
-  top: 16px;
-  transform: translateX(-50%);
-  /* width: 100%; */
-}
 
-.footer-button {
-  width: 350px;
-  height: 87px;
-  padding: 10px;
-
-  position: absolute;
-  top: 800px;
-  left: 50%;
-  transform: translate(-50%, 0);
-  display: flex;
-
-  justify-content: center;
-  align-items: center;
-}
-</style>
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useFullscreen } from '@vueuse/core'
+import '@/utils/screen'
 import leftPlane from '@/components/plane/leftPlane.vue'
 import rightPlane from '@/components/plane/rightPlane.vue'
 import centerPlane from '@/components/plane/centerPlane.vue'
@@ -70,23 +42,6 @@ import PageHeader from '@/components/PageHeader/index.vue'
 import { usePlaneStore } from '@/stores/planeStore'
 
 const planeStore = usePlaneStore()
-const testChangePlane = () => {
-  if (planeStore.planeMsg.nowPlane.left == 'test') {
-    planeStore.changeNowPlane({
-      left: 'home',
-      right: 'home',
-      center: 'home',
-    })
-  } else {
-    planeStore.changeNowPlane({
-      left: 'test',
-      right: 'test',
-    })
-  }
-}
-const backPlane = () => {
-  planeStore.backPlane()
-}
 
 const handleParentChecked = (item: any) => {
   console.log('选中的父级:', item)
@@ -439,4 +394,43 @@ const footButton = [
     ],
   },
 ]
+
+const fullEl = ref<HTMLElement | null>(null)
+const { toggle } = useFullscreen(fullEl)
+const fullScreen_fn = () => {
+  toggle()
+}
 </script>
+<style scoped lang="less">
+#mainBox {
+  /* position: relative; */
+  box-sizing: border-box;
+  width: 100vw;
+  height: 100vh;
+}
+
+.mainBox-container {
+  position: relative;
+}
+
+.pageHeader {
+  position: absolute;
+  left: 50%;
+  top: 16px;
+  transform: translateX(-50%);
+  /* width: 100%; */
+}
+
+.footer-button {
+  height: 87px;
+  padding: 10px;
+  position: absolute;
+  bottom: 34px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  display: flex;
+  column-gap: 50px;
+  justify-content: center;
+  align-items: center;
+}
+</style>

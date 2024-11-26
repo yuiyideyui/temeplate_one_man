@@ -177,8 +177,8 @@ const toggleChildrenVisibility = (item: PopoverList) => {
     align-items: center;
 
     .image {
-      width: 60px;
-      height: 60px;
+      width: 62px;
+      height: 62px;
       border-radius: 50%;
       cursor: pointer;
       transition: filter 0.3s ease;
@@ -194,8 +194,6 @@ const toggleChildrenVisibility = (item: PopoverList) => {
       text-align: center;
       font-size: 13px;
       color: #56e1ff;
-      width: 42px;
-      height: 18px;
     }
 
     .custom-popover {

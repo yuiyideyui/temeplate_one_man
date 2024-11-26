@@ -2,7 +2,7 @@
   <div class="page-header-container">
     <div class="header-main">
       <div class="header-main-left">
-        <p class="full">
+        <p class="full" v-if="fullScreen" @click="fullScreen_fn">
           <img
             class="full-button"
             src="@/assets/image/greenRoadPlanning/2.png"
@@ -11,7 +11,7 @@
         </p>
       </div>
       <div class="header-main-center">
-        <p class="title">绿路对象规划</p>
+        <p class="title">{{ title }}</p>
       </div>
       <div class="header-main-right">
         <p class="date">
@@ -19,7 +19,7 @@
             class="icon"
             src="@/assets/image/greenRoadPlanning/5.png"
             alt=""
-          /><span class="content"> 2023年3月1日</span>
+          /><span class="content"> {{ dayTime }}</span>
         </p>
       </div>
     </div>
@@ -27,7 +27,33 @@
 </template>
 
 <script setup lang="ts">
+import dayjs from 'dayjs'
 import { ref } from 'vue'
+const props = defineProps({
+  /**
+   * 标题
+   */
+  title: {
+    type: String,
+    require: true,
+  },
+  /**
+   * 是否有全屏按钮
+   */
+  fullScreen: {
+    type: Boolean,
+    default: false,
+  },
+  dayTime: {
+    type: String,
+    default: dayjs().format('YYYY-MM-DD'),
+  },
+})
+
+const emits = defineEmits(['fullScreen_fn'])
+const fullScreen_fn = () => {
+  emits('fullScreen_fn')
+}
 
 const citySelect = ref('')
 </script>
@@ -63,7 +89,7 @@ const citySelect = ref('')
         display: flex;
         align-items: flex-end;
         gap: 12px;
-        // background-color: red;
+
         .icon {
           width: 23px;
           height: 20px;
@@ -78,7 +104,7 @@ const citySelect = ref('')
     &-left {
       width: 100px;
       height: 40px;
-      // background-color: red;
+
       position: absolute;
       left: 20px;
       bottom: 22px;
@@ -87,7 +113,7 @@ const citySelect = ref('')
         gap: 5px;
         justify-content: center;
         align-items: center;
-        // background-color: red;
+        cursor: pointer;
         .full-button {
           width: 35.83px;
           height: 35.83px;
@@ -95,6 +121,8 @@ const citySelect = ref('')
         .content {
           color: #1ef1ff;
           font-size: 20px;
+          text-decoration: underline;
+          font-family: 'webfont-medium';
         }
       }
     }

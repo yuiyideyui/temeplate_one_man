@@ -2,7 +2,7 @@ import '@/assets/css/main.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-
+import '@/assets/font/font.less'
 import App from './App.vue'
 import router from './router'
 import { VueQueryPlugin } from '@tanstack/vue-query'
