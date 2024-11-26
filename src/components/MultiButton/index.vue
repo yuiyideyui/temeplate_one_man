@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, type PropType, defineEmits, nextTick } from "vue";
+import { ref, type PropType, defineEmits } from "vue";
 
 // 接收 props
 defineProps({
