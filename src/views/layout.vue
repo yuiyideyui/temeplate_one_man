@@ -1,11 +1,11 @@
 <template>
   <div id="mainBox">
+    <!-- <PageHeader class="pageHeader"/> -->
+
     <div id="topTitle" @click="testChangePlane">点击切换test</div>
 
     <div @click="test2CahangePlane">点击切换test2</div>
     <div @click="backPlane">backPlane</div>
-
-    <div id="BoxTitle"></div>
 
     <div id="planeBox">
       <leftPlane></leftPlane>
@@ -18,7 +18,7 @@
         v-for="(button, index) in footButton"
         :key="index"
         class="test"
-        :layerList="layerList"
+        :layerList="button.layerList"
         :defaultImage="button.defaultImage"
         :selectImage="button.selectImg"
         :comTitle="button.comTitle"
@@ -33,6 +33,14 @@
   position: relative;
   box-sizing: border-box;
 }
+
+.pageHeader {
+  position: fixed;
+  left: 50%;
+  top: 16px;
+  transform: translateX(-50%);
+}
+
 .footer-button {
   width: 350px;
   height: 87px;
@@ -50,20 +58,14 @@
 }
 </style>
 <script setup lang="ts">
-import viewTitle from '@/components/viewTitle/index.vue'
-import image1Default from '@/assets/image/greenRoadPlanning/7_1.png'
-import image1Select from '@/assets/image/greenRoadPlanning/7.png'
-import image2Default from '@/assets/image/greenRoadPlanning/8_1.png'
-import image2Select from '@/assets/image/greenRoadPlanning/8.png'
-
-import image3Default from '@/assets/image/greenRoadPlanning/9_1.png'
-import image3Select from '@/assets/image/greenRoadPlanning/9.png'
 import { ref } from 'vue'
 import leftPlane from '@/components/plane/leftPlane.vue'
 import rightPlane from '@/components/plane/rightPlane.vue'
 import centerPlane from '@/components/plane/centerPlane.vue'
 import MultiButton from '@/components/MultiButton/index.vue'
+import PageHeader from '@/components/PageHeader/index.vue'
 import { usePlaneStore } from '@/stores/planeStore'
+
 const planeStore = usePlaneStore()
 const testChangePlane = () => {
   if (planeStore.planeMsg.nowPlane.left == 'test') {
@@ -83,7 +85,7 @@ const backPlane = () => {
   planeStore.backPlane()
 }
 
-const handleParentChecked = item => {
+const handleParentChecked = (item: any) => {
   console.log('选中的父级:', item)
 }
 const test2CahangePlane = () => {
@@ -91,126 +93,129 @@ const test2CahangePlane = () => {
     center: 'test2',
   })
 }
-const layerList = ref([
-  {
-    id: '公安实有单位',
-    type: 14,
-    isShow: true,
-    layerName: '公安实有单位',
-    imgType: 2,
-    img: './img/organization/公安实有单位.png',
-  },
-  {
-    id: '市场主体',
-    type: 11,
-    isShow: true,
-    layerName: '市场主体',
-    imgType: 2,
-    img: './img/organization/市场主体.png',
-    children: [
-      {
-        id: '企业',
-        // type: 2,
-        param: 'qy',
-        isShow: true,
-        layerName: '企业',
-        imgType: 2,
-        img: './img/organization/企业.png',
-      },
-      {
-        id: '个体户',
-        // type: 3,
-        param: 'gth',
-        isShow: true,
-        layerName: '个体户',
-        imgType: 2,
-        img: './img/organization/个体户.png',
-      },
-    ],
-  },
-  {
-    id: '事业单位',
-    type: 1,
-    isShow: true,
-    layerName: '事业单位',
-    imgType: 2,
-    img: './img/organization/事业单位.png',
-  },
-  {
-    id: '行政单位',
-    type: 2,
-    isShow: true,
-    layerName: '行政单位',
-    imgType: 2,
-    img: './img/organization/行政单位.png',
-  },
-  {
-    id: '其他单位',
-    type: '',
-    isShow: true,
-    layerName: '其他单位',
-    imgType: 2,
-    img: './img/organization/其他单位.png',
-    children: [
-      {
-        id: '学校机构',
-        type: 3,
-        isShow: true,
-        layerName: '学校机构',
-        imgType: 2,
-        img: './img/organization/学校机构.png',
-      },
-      {
-        id: '污染源企业',
-        type: 9,
-        isShow: true,
-        layerName: '污染源企业',
-        imgType: 2,
-        img: './img/organization/污染源企业.png',
-      },
-      {
-        id: '医疗机构',
-        type: 10,
-        isShow: true,
-        layerName: '医疗机构',
-        imgType: 2,
-        img: './img/organization/医疗机构.png',
-      },
-      {
-        id: '社会组织',
-        type: 12,
-        isShow: true,
-        layerName: '社会组织',
-        imgType: 2,
-        img: './img/organization/社会组织.png',
-      },
-      {
-        id: '养老机构',
-        type: 13,
-        isShow: true,
-        layerName: '养老机构',
-        imgType: 2,
-        img: './img/organization/养老机构.png',
-      },
-    ],
-  },
-] as any)
 
-const footButton = [
-  {
-    comTitle: '路网',
-    defaultImage: image1Default,
-    selectImg: image1Select,
-  },
-  {
-    comTitle: '设备',
-    defaultImage: image2Default,
-    selectImg: image2Select,
-  },
-  {
-    comTitle: '交叉口',
-    defaultImage: image3Default,
-    selectImg: image3Select,
-  },
+const images = [
+  { default: 'greenRoadPlanning/7_1.png', selected: 'greenRoadPlanning/7.png' },
+  { default: 'greenRoadPlanning/8_1.png', selected: 'greenRoadPlanning/8.png' },
+  { default: 'greenRoadPlanning/9_1.png', selected: 'greenRoadPlanning/9.png' },
 ]
+
+// 动态生成图片路径
+const getImageUrl = (path: any) =>
+  new URL(`../assets/image/${path}`, import.meta.url).href
+const footButton = images.map((image, index) => ({
+  comTitle: ['路网', '设备', '交叉口'][index], // 根据索引动态设置标题
+  defaultImage: getImageUrl(image.default), // 默认图片路径
+  selectImg: getImageUrl(image.selected), // 选中图片路径
+  layerList: [],
+}))
+
+footButton.forEach((button, index) => {
+  console.log(button)
+
+  button.layerList = [
+    {
+      id: '公安实有单位',
+      type: 14,
+      isShow: true,
+      layerName: '公安实有单位',
+      imgType: 2,
+      img: './img/organization/公安实有单位.png',
+    },
+    {
+      id: '市场主体',
+      type: 11,
+      isShow: true,
+      layerName: '市场主体',
+      imgType: 2,
+      img: './img/organization/市场主体.png',
+      children: [
+        {
+          id: '企业',
+          // type: 2,
+          param: 'qy',
+          isShow: true,
+          layerName: '企业',
+          imgType: 2,
+          img: './img/organization/企业.png',
+        },
+        {
+          id: '个体户',
+          // type: 3,
+          param: 'gth',
+          isShow: true,
+          layerName: '个体户',
+          imgType: 2,
+          img: './img/organization/个体户.png',
+        },
+      ],
+    },
+    {
+      id: '事业单位',
+      type: 1,
+      isShow: true,
+      layerName: '事业单位',
+      imgType: 2,
+      img: './img/organization/事业单位.png',
+    },
+    {
+      id: '行政单位',
+      type: 2,
+      isShow: true,
+      layerName: '行政单位',
+      imgType: 2,
+      img: './img/organization/行政单位.png',
+    },
+    {
+      id: '其他单位',
+      type: '',
+      isShow: true,
+      layerName: '其他单位',
+      imgType: 2,
+      img: './img/organization/其他单位.png',
+      children: [
+        {
+          id: '学校机构',
+          type: 3,
+          isShow: true,
+          layerName: '学校机构',
+          imgType: 2,
+          img: './img/organization/学校机构.png',
+        },
+        {
+          id: '污染源企业',
+          type: 9,
+          isShow: true,
+          layerName: '污染源企业',
+          imgType: 2,
+          img: './img/organization/污染源企业.png',
+        },
+        {
+          id: '医疗机构',
+          type: 10,
+          isShow: true,
+          layerName: '医疗机构',
+          imgType: 2,
+          img: './img/organization/医疗机构.png',
+        },
+        {
+          id: '社会组织',
+          type: 12,
+          isShow: true,
+          layerName: '社会组织',
+          imgType: 2,
+          img: './img/organization/社会组织.png',
+        },
+        {
+          id: '养老机构',
+          type: 13,
+          isShow: true,
+          layerName: '养老机构',
+          imgType: 2,
+          img: './img/organization/养老机构.png',
+        },
+      ],
+    },
+  ] as any
+})
 </script>
