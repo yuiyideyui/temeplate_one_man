@@ -36,11 +36,11 @@ const props = defineProps({
 .left.ComPlane {
   position: absolute;
   left: 10px;
-  top: 10px;
+  top: 147px;
 }
 .right.ComPlane {
   position: absolute;
   right: 10px;
-  top: 10px;
+  top: 147px;
 }
 </style>
