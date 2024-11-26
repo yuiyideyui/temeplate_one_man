@@ -1,9 +1,12 @@
 <template>
   <div class="page-header-container">
     <div class="header-main">
-      <div>
+      <div class="header-main-left">
+       <p class="full">
+         <img class="full-button" src="@/assets/image/greenRoadPlanning/2.png"   />
+          <span class="content">全屏</span>
+       </p> 
 
-        11
       </div>
       <div class="header-main-center">
         <p class="title">绿路对象规划</p>
@@ -33,8 +36,7 @@ const citySelect = ref('')
     height: 89px;
     background-image: url('@/assets/image/greenRoadPlanning/1.png');
     position: relative;
-    display: flex;
-    justify-content: space-around;
+    
     &-center{
     
       position: absolute;
@@ -49,10 +51,12 @@ const citySelect = ref('')
     }
     &-right{
         width: 240px;
-        // background-color: green;
         
+        position: absolute;
+        left: 66%;
+        top: 40px;
         .date{
-            margin-top: 42px;
+            
             height: 26px;
             display: flex;
             align-items: flex-end;
@@ -68,6 +72,31 @@ const citySelect = ref('')
                 font-weight: 500;
             }
         }
+    }
+    &-left{
+      width: 100px;
+      height: 40px;
+      // background-color: red;
+      position: absolute;
+      left: 20px;
+      bottom: 22px;
+      .full{
+        display: flex;
+       gap: 5px;
+      justify-content: center;
+      align-items: center;
+      // background-color: red;
+      .full-button{
+        width: 35.83px;
+        height: 35.83px;
+       
+      }
+      .content{
+        color: #1EF1FF;
+        font-size: 20px;
+      }
+      }
+      
     }
   }
 }
