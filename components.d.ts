@@ -11,6 +11,7 @@ declare module 'vue' {
     CenterPlane: typeof import('./src/components/plane/centerPlane.vue')['default']
     LeftPlane: typeof import('./src/components/plane/leftPlane.vue')['default']
     MultiButton: typeof import('./src/components/MultiButton/index.vue')['default']
+    PageHeader: typeof import('./src/components/PageHeader/index.vue')['default']
     RightPlane: typeof import('./src/components/plane/rightPlane.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
