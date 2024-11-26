@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { watch, ref, nextTick } from 'vue'
 import { useFullscreen } from '@vueuse/core'
 import '@/utils/screen'
 import leftPlane from '@/components/plane/leftPlane.vue'
@@ -396,10 +396,17 @@ const footButton = [
 ]
 
 const fullEl = ref<HTMLElement | null>(null)
-const { toggle } = useFullscreen(fullEl)
+const { toggle, isFullscreen } = useFullscreen(fullEl)
 const fullScreen_fn = () => {
   toggle()
 }
+watch(isFullscreen, newValue => {
+  if (!newValue) {
+    nextTick(() => {
+      window.setScale()
+    })
+  }
+})
 </script>
 <style scoped lang="less">
 #mainBox {
@@ -407,6 +414,7 @@ const fullScreen_fn = () => {
   box-sizing: border-box;
   width: 100vw;
   height: 100vh;
+  overflow: hidden;
 }
 
 .mainBox-container {
