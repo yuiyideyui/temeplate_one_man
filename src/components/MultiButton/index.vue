@@ -1,17 +1,19 @@
 <template>
+
   <div class="multiButton-box">
     <div class="multiButton-container" style="width: 100%;" @mouseenter="showBubble" @mouseleave="hideBubble">
       <!-- 图片与标题 -->
       <div class="com-Main">
+        {{ isGrayscale }}
         <img class="image" :src="isGrayscale ? defaultImage : selectImage" alt="comImage" @click="toggleGrayscale" />
         <p class="title">{{ comTitle }}</p>
 
         <!-- 气泡 -->
 
-        <div class="custom-popover"  
-          :class="{ show: showPopover }">
+        <div class="custom-popover" ref="popover" :class="{ show: showPopover }">
 
           <div v-for="(item, index) in layerList" :key="index" class="layer-item">
+
             <!-- 父级 -->
             <div class="parent-item">
 
@@ -41,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, type PropType, defineEmits } from "vue";
+import { ref, type PropType, defineEmits, nextTick } from "vue";
 
 // 接收 props
 defineProps({
@@ -68,54 +70,52 @@ interface PopoverList {
 // 状态管理
 const isGrayscale = ref(true); // 图片是否黑白
 const showPopover = ref(false); // 气泡显示状态
-let hoverTimer: number | null = null; // 定时器 ID
-let hideTimer: number | null = null;
-
+let hoverTimer = ref<number | undefined>(undefined); // 定时器 ID
+let hideTimer = ref<number | undefined>(undefined);
+const popover = ref<HTMLElement | null>(null);
 const toggleGrayscale = () => {
   isGrayscale.value = !isGrayscale.value;
+  if (hideTimer) {
+    clearTimeout(hideTimer.value); // 清除隐藏定时器
+    hideTimer.value = undefined;
+  }
+  if (hoverTimer) {
+    clearTimeout(hoverTimer.value); // 清除悬停定时器，避免重复触发
+  }
+  hoverTimer.value=setTimeout(() => {
+    !isGrayscale.value ? showPopover.value = true : showPopover.value = false
+  }, 150)
 };
 
 // 显示气泡（仅在彩色状态）
-const showBubble = (popoverElement:any) => {
+const showBubble = () => {
   if (!isGrayscale.value) {
     if (hideTimer) {
-      clearTimeout(hideTimer); // 清除隐藏定时器
-      hideTimer = null;
+      clearTimeout(hideTimer.value); // 清除隐藏定时器
+      hideTimer.value = undefined;
     }
     if (hoverTimer) {
-      clearTimeout(hoverTimer); // 清除悬停定时器，避免重复触发
+      clearTimeout(hoverTimer.value); // 清除悬停定时器，避免重复触发
     }
-    hoverTimer = setTimeout(() => {
+    hoverTimer.value = setTimeout(() => {
+      
       showPopover.value = true;
-    }, 350);  
-  }
 
-
-  // 获取目标弹窗元素
-  if (popoverElement) {
-    const scrollHeight = popoverElement.scrollHeight; // 获取内容实际高度
-    popoverElement.style.maxHeight = `${scrollHeight}px`; // 动态设置 max-height
-    popoverElement.classList.add('show'); // 添加显示类，触发动画
+    }, 350);
   }
 };
 
 // 隐藏气泡
-const hideBubble = (popoverElement:any) => {
+const hideBubble = () => {
   if (hoverTimer) {
-    clearTimeout(hoverTimer); // 清除悬停定时器，防止鼠标快速离开后仍触发展示
-    hoverTimer = null;
+    clearTimeout(hoverTimer.value); // 清除悬停定时器，防止鼠标快速离开后仍触发展示
+    hoverTimer.value = undefined;
   }
-  hideTimer = setTimeout(() => {
+  hideTimer.value = setTimeout(() => {
     showPopover.value = false;
-  }, 200); // 延迟隐藏，避免闪烁
 
-   // 隐藏时复位 max-height
-   if (popoverElement) {
-    popoverElement.classList.remove('show'); // 移除显示类
-    setTimeout(() => {
-      popoverElement.style.maxHeight = '0'; // 归零高度，触发收缩动画
-    }, 0);
-  }
+    
+  }, 150); // 延迟隐藏，避免闪烁
 };
 
 const emit = defineEmits();
@@ -141,7 +141,7 @@ const toggleChildrenVisibility = (item: PopoverList) => {
   justify-content: center;
   width: 100%;
   height: 100%;
-   
+
 }
 
 .multiButton-container {
@@ -177,35 +177,38 @@ const toggleChildrenVisibility = (item: PopoverList) => {
 
     .custom-popover {
       box-sizing: border-box;
-  font-family: Alibaba PuHuiTi, Alibaba PuHuiTi;
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%) translateY(10px); /* 初始位置稍微偏移 */
-  background: #000D2F;
-  border: 0.5px solid #33D4E9;
-  border-radius: 5px;
-  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
-  padding: 10px 12px 13px 12px;
-  color: #FFFFFF;
-  opacity: 0;
-  max-height: 0;
-  overflow: hidden;
-  transition: opacity 0.5s ease, transform 0.5s ease, max-height 0.5s ease;
-  font-size: 14px;
-  font-weight: 200;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  white-space: nowrap;
-  width: 106px;
-     
- 
-  
+      font-family: Alibaba PuHuiTi, Alibaba PuHuiTi;
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      /* 初始位置稍微偏移 */
+      background: #000D2F;
+      border: 0.5px solid #33D4E9;
+      border-radius: 5px;
+      box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
+      padding: 10px 12px 13px 12px;
+      color: #FFFFFF;
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: opacity 0.5s ease, transform 0.5s ease, max-height 0.5s ease;
+      font-size: 14px;
+      font-weight: 200;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      white-space: nowrap;
+      width: 106px;
+      margin-bottom: 10px;
+
+
       &.show {
         opacity: 1;
-        transform: translateX(-50%) translateY(0); /* 恢复到正常位置 */
-  max-height: 500px; /* 设置足够大以适应内容高度 */
+        transform: translateX(-50%) translateY(0);
+        /* 恢复到正常位置 */
+        max-height: 500px;
+        /* 设置足够大以适应内容高度 */
       }
 
       .checkbox {
@@ -244,6 +247,7 @@ const toggleChildrenVisibility = (item: PopoverList) => {
         /* 子项在父项下方 */
         // margin-bottom: 8px;
         gap: 8px;
+
         .parent-item {
           display: flex;
           align-items: center;
