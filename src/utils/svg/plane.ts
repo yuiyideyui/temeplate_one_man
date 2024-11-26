@@ -74,7 +74,6 @@ export const panelSvg = (width = 452, height = 917) => {
   <path d="${icon3Svg}" fill="#1EF1FF"/>
   </svg>
   `
-  console.log('yui', yui);
   const base64Code = btoa(yui);
   return `data:image/svg+xml;base64,${base64Code}`
 }
