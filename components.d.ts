@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     CardCom: typeof import('./src/components/cardCom/index.vue')['default']
     CenterPlane: typeof import('./src/components/plane/centerPlane.vue')['default']
+    ElImage: typeof import('element-plus/es')['ElImage']
     LeftPlane: typeof import('./src/components/plane/leftPlane.vue')['default']
     MultiButton: typeof import('./src/components/MultiButton/index.vue')['default']
     PageHeader: typeof import('./src/components/PageHeader/index.vue')['default']
