@@ -1,11 +1,14 @@
 <template>
   <div id="mainBox">
-    <!-- <PageHeader class="pageHeader"/> -->
+    <div class="mainBox-container">
 
-    <div id="topTitle" @click="testChangePlane">点击切换test</div>
+    
+    <PageHeader class="pageHeader" />
+
+    <!-- <div id="topTitle" @click="testChangePlane">点击切换test</div>
 
     <div @click="test2CahangePlane">点击切换test2</div>
-    <div @click="backPlane">backPlane</div>
+    <div @click="backPlane">backPlane</div> -->
 
     <div id="planeBox">
       <leftPlane></leftPlane>
@@ -25,20 +28,27 @@
         @parentChecked="handleParentChecked"
       />
     </div>
-    <div></div>
+  </div>
   </div>
 </template>
 <style scoped>
-.mainBox {
-  position: relative;
+#mainBox {
+  /* position: relative; */
   box-sizing: border-box;
+  
+ 
 }
+.mainBox-container {
+  position: relative;
 
+ 
+}
 .pageHeader {
-  position: fixed;
+  position: absolute;
   left: 50%;
   top: 16px;
   transform: translateX(-50%);
+  /* width: 100%; */
 }
 
 .footer-button {
@@ -46,11 +56,10 @@
   height: 87px;
   padding: 10px;
 
-  position: absolute;
-  bottom: 30px;
-  left: 50%;
-  transform: translate(-50%, -50%);
-
+ position: absolute;
+ top: 800px;
+ left: 50%;
+ transform: translate(-50%,0);
   display: flex;
 
   justify-content: center;

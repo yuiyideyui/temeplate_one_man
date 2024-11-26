@@ -1,6 +1,6 @@
 <template>
   <div>
-    homeCenter
+    <!-- homeCenter -->
   </div>
 </template>
 
