@@ -9,15 +9,11 @@ declare module 'vue' {
   export interface GlobalComponents {
     CardCom: typeof import('./src/components/cardCom/index.vue')['default']
     CenterPlane: typeof import('./src/components/plane/centerPlane.vue')['default']
-    ElImage: typeof import('element-plus/es')['ElImage']
-    ElOption: typeof import('element-plus/es')['ElOption']
-    ElSelect: typeof import('element-plus/es')['ElSelect']
     LeftPlane: typeof import('./src/components/plane/leftPlane.vue')['default']
     MultiButton: typeof import('./src/components/MultiButton/index.vue')['default']
     PageHeader: typeof import('./src/components/PageHeader/index.vue')['default']
     RightPlane: typeof import('./src/components/plane/rightPlane.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    ViewTitle: typeof import('./src/components/viewTitle/index.vue')['default']
   }
 }

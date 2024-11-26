@@ -8,7 +8,6 @@
     >
       <!-- 图片与标题 -->
       <div class="com-Main">
-        {{ isGrayscale }}
         <img
           class="image"
           :src="isGrayscale ? defaultImage : selectImage"
@@ -74,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, type PropType, defineEmits } from "vue";
+import { ref, type PropType, defineEmits } from 'vue'
 
 // 接收 props
 defineProps({
@@ -99,8 +98,8 @@ interface PopoverList {
 // 状态管理
 const isGrayscale = ref(true) // 图片是否黑白
 const showPopover = ref(false) // 气泡显示状态
-let hoverTimer = ref<number | undefined>(undefined) // 定时器 ID
-let hideTimer = ref<number | undefined>(undefined)
+let hoverTimer = ref<NodeJS.Timeout | undefined>(undefined) // 定时器 ID
+let hideTimer = ref<NodeJS.Timeout | undefined>(undefined)
 const popover = ref<HTMLElement | null>(null)
 const toggleGrayscale = () => {
   isGrayscale.value = !isGrayscale.value
