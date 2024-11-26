@@ -1,42 +1,73 @@
 <template>
-
   <div class="multiButton-box">
-    <div class="multiButton-container" style="width: 100%;" @mouseenter="showBubble" @mouseleave="hideBubble">
+    <div
+      class="multiButton-container"
+      style="width: 100%"
+      @mouseenter="showBubble"
+      @mouseleave="hideBubble"
+    >
       <!-- 图片与标题 -->
       <div class="com-Main">
         {{ isGrayscale }}
-        <img class="image" :src="isGrayscale ? defaultImage : selectImage" alt="comImage" @click="toggleGrayscale" />
+        <img
+          class="image"
+          :src="isGrayscale ? defaultImage : selectImage"
+          alt="comImage"
+          @click="toggleGrayscale"
+        />
         <p class="title">{{ comTitle }}</p>
 
         <!-- 气泡 -->
 
-        <div class="custom-popover" ref="popover" :class="{ show: showPopover }">
-
-          <div v-for="(item, index) in layerList" :key="index" class="layer-item">
-
+        <div
+          class="custom-popover"
+          ref="popover"
+          :class="{ show: showPopover }"
+        >
+          <div
+            v-for="(item, index) in layerList"
+            :key="index"
+            class="layer-item"
+          >
             <!-- 父级 -->
             <div class="parent-item">
-
-              <input class="checkbox" type="checkbox" v-model="item.checked"
-                @change="handleParentCheckChange(item.id)" />
+              <input
+                class="checkbox"
+                type="checkbox"
+                v-model="item.checked"
+                @change="handleParentCheckChange(item.id)"
+              />
               <!-- <span class="child-show" v-show="item.children" @click="toggleChildrenVisibility(item)">{{
                 item.isChildVisible ? '-' : '+' }}</span> -->
               <span class="layer-name">{{ item.layerName }}</span>
-
             </div>
             <!-- 子级 -->
             <transition name="fade-slide">
-              <div v-if="item.isChildVisible && item.children && item.children.length > 0" class="children-list">
-                <div v-for="(child, childIndex) in item.children" :key="childIndex" class="child-item">
-                  <input class="checkbox" type="checkbox" v-model="child.checked"
-                    @change="handleChildCheckChange(item, child)" />
+              <div
+                v-if="
+                  item.isChildVisible &&
+                  item.children &&
+                  item.children.length > 0
+                "
+                class="children-list"
+              >
+                <div
+                  v-for="(child, childIndex) in item.children"
+                  :key="childIndex"
+                  class="child-item"
+                >
+                  <input
+                    class="checkbox"
+                    type="checkbox"
+                    v-model="child.checked"
+                    @change="handleChildCheckChange(item, child)"
+                  />
                   <span>{{ child.layerName }}</span>
                 </div>
               </div>
             </transition>
           </div>
         </div>
-
       </div>
     </div>
   </div>
@@ -47,91 +78,85 @@ import { ref, type PropType, defineEmits } from "vue";
 
 // 接收 props
 defineProps({
-
-  defaultImage: { type: String, default: "" },
+  defaultImage: { type: String, default: '' },
   selectImage: { type: String, default: '' },
-  comTitle: { type: String, default: "暂无标题" },
-  width: { type: String, default: "500px" },
-  height: { type: String, default: "500px" },
+  comTitle: { type: String, default: '暂无标题' },
+  width: { type: String, default: '500px' },
+  height: { type: String, default: '500px' },
   layerList: { type: Array as PropType<PopoverList[]>, default: () => [] },
-
-});
+})
 interface PopoverList {
-  id: string;
-  layerName: string;
-  checked?: boolean;
-  children?: Array<any>;
-  isShow: boolean;
-  type: number;
-  img: string;
-  imgType: number;
-  isChildVisible?: boolean;
+  id: string
+  layerName: string
+  checked?: boolean
+  children?: Array<any>
+  isShow: boolean
+  type: number
+  img: string
+  imgType: number
+  isChildVisible?: boolean
 }
 // 状态管理
-const isGrayscale = ref(true); // 图片是否黑白
-const showPopover = ref(false); // 气泡显示状态
-let hoverTimer = ref<number | undefined>(undefined); // 定时器 ID
-let hideTimer = ref<number | undefined>(undefined);
-const popover = ref<HTMLElement | null>(null);
+const isGrayscale = ref(true) // 图片是否黑白
+const showPopover = ref(false) // 气泡显示状态
+let hoverTimer = ref<number | undefined>(undefined) // 定时器 ID
+let hideTimer = ref<number | undefined>(undefined)
+const popover = ref<HTMLElement | null>(null)
 const toggleGrayscale = () => {
-  isGrayscale.value = !isGrayscale.value;
+  isGrayscale.value = !isGrayscale.value
   if (hideTimer) {
-    clearTimeout(hideTimer.value); // 清除隐藏定时器
-    hideTimer.value = undefined;
+    clearTimeout(hideTimer.value) // 清除隐藏定时器
+    hideTimer.value = undefined
   }
   if (hoverTimer) {
-    clearTimeout(hoverTimer.value); // 清除悬停定时器，避免重复触发
+    clearTimeout(hoverTimer.value) // 清除悬停定时器，避免重复触发
   }
-  hoverTimer.value=setTimeout(() => {
-    !isGrayscale.value ? showPopover.value = true : showPopover.value = false
+  hoverTimer.value = setTimeout(() => {
+    !isGrayscale.value
+      ? (showPopover.value = true)
+      : (showPopover.value = false)
   }, 150)
-};
+}
 
 // 显示气泡（仅在彩色状态）
 const showBubble = () => {
   if (!isGrayscale.value) {
     if (hideTimer) {
-      clearTimeout(hideTimer.value); // 清除隐藏定时器
-      hideTimer.value = undefined;
+      clearTimeout(hideTimer.value) // 清除隐藏定时器
+      hideTimer.value = undefined
     }
     if (hoverTimer) {
-      clearTimeout(hoverTimer.value); // 清除悬停定时器，避免重复触发
+      clearTimeout(hoverTimer.value) // 清除悬停定时器，避免重复触发
     }
     hoverTimer.value = setTimeout(() => {
-      
-      showPopover.value = true;
-
-    }, 350);
+      showPopover.value = true
+    }, 350)
   }
-};
+}
 
 // 隐藏气泡
 const hideBubble = () => {
   if (hoverTimer) {
-    clearTimeout(hoverTimer.value); // 清除悬停定时器，防止鼠标快速离开后仍触发展示
-    hoverTimer.value = undefined;
+    clearTimeout(hoverTimer.value) // 清除悬停定时器，防止鼠标快速离开后仍触发展示
+    hoverTimer.value = undefined
   }
   hideTimer.value = setTimeout(() => {
-    showPopover.value = false;
+    showPopover.value = false
+  }, 150) // 延迟隐藏，避免闪烁
+}
 
-    
-  }, 150); // 延迟隐藏，避免闪烁
-};
-
-const emit = defineEmits();
+const emit = defineEmits()
 const handleParentCheckChange = (item: any) => {
-  emit('parentChecked', item);
-};
+  emit('parentChecked', item)
+}
 const handleChildCheckChange = (item: any, child: any) => {
-  emit('childChecked', { item, child });
-
+  emit('childChecked', { item, child })
 }
 
 const toggleChildrenVisibility = (item: PopoverList) => {
-  item.isChildVisible = !item.isChildVisible; // 切换子级的可见性
-};
+  item.isChildVisible = !item.isChildVisible // 切换子级的可见性
+}
 </script>
-
 
 <style scoped lang="less">
 .multiButton-box {
@@ -141,7 +166,6 @@ const toggleChildrenVisibility = (item: PopoverList) => {
   justify-content: center;
   width: 100%;
   height: 100%;
-
 }
 
 .multiButton-container {
@@ -170,29 +194,34 @@ const toggleChildrenVisibility = (item: PopoverList) => {
     .title {
       text-align: center;
       font-size: 13px;
-      color: #56E1FF;
+      color: #56e1ff;
       width: 42px;
       height: 18px;
     }
 
     .custom-popover {
       box-sizing: border-box;
-      font-family: Alibaba PuHuiTi, Alibaba PuHuiTi;
+      font-family:
+        Alibaba PuHuiTi,
+        Alibaba PuHuiTi;
       position: absolute;
       bottom: 100%;
       left: 50%;
       transform: translateX(-50%) translateY(10px);
       /* 初始位置稍微偏移 */
-      background: #000D2F;
-      border: 0.5px solid #33D4E9;
+      background: #000d2f;
+      border: 0.5px solid #33d4e9;
       border-radius: 5px;
       box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
       padding: 10px 12px 13px 12px;
-      color: #FFFFFF;
+      color: #ffffff;
       opacity: 0;
       max-height: 0;
       overflow: hidden;
-      transition: opacity 0.5s ease, transform 0.5s ease, max-height 0.5s ease;
+      transition:
+        opacity 0.5s ease,
+        transform 0.5s ease,
+        max-height 0.5s ease;
       font-size: 14px;
       font-weight: 200;
       display: flex;
@@ -201,7 +230,6 @@ const toggleChildrenVisibility = (item: PopoverList) => {
       white-space: nowrap;
       width: 106px;
       margin-bottom: 10px;
-
 
       &.show {
         opacity: 1;
@@ -219,7 +247,7 @@ const toggleChildrenVisibility = (item: PopoverList) => {
         cursor: pointer;
         width: 11px;
         height: 11px;
-        border: 1px solid #33D4E9;
+        border: 1px solid #33d4e9;
         /* 边框颜色 */
         border-radius: 3px;
         background-color: #001622;
@@ -230,13 +258,12 @@ const toggleChildrenVisibility = (item: PopoverList) => {
         /* 默认未选中的背景图片 */
         background-image: url('@/assets/image/greenRoadPlanning/14.png');
 
-
         &:checked {
           /* 选中状态的背景图片 */
           background-image: url('@/assets/image/greenRoadPlanning/15.png');
-          border-color: #33D4E9;
+          border-color: #33d4e9;
           /* 选中边框颜色 */
-          background-color: #33D4E9;
+          background-color: #33d4e9;
           /* 背景颜色 */
         }
       }
@@ -268,10 +295,7 @@ const toggleChildrenVisibility = (item: PopoverList) => {
             top: 50%;
             transform: translateY(-50%);
 
-
             color: #007bff;
-
-
           }
 
           .checkbox {
@@ -350,20 +374,17 @@ const toggleChildrenVisibility = (item: PopoverList) => {
         //     }
         //   }
         // }
-
-
       }
     }
-
-
   }
 }
-
 
 /* 定义子项显示/隐藏的动画 */
 .fade-slide-enter-active,
 .fade-slide-leave-active {
-  transition: transform 0.3s ease, opacity 0.4s ease-in-out;
+  transition:
+    transform 0.3s ease,
+    opacity 0.4s ease-in-out;
 }
 
 .fade-slide-enter-from {
