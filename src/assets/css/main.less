@@ -1,0 +1,10 @@
+@import './normalize.css';
+@import './var.less';
+html {
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--theme-background-color-light);
+  &[data-theme='dark'] {
+    background-color: var(--theme-background-color-dark);
+  }
+}

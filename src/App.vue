@@ -1,8 +1,7 @@
-<script setup lang="ts">
+<script setup lang="tsx">
 import { RouterView } from 'vue-router'
 import { getSub } from '@/api/test'
 import { onMounted, ref } from 'vue'
-
 onMounted(() => {
   getSub().then(res => {
     console.log('res', res)
@@ -11,7 +10,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <RouterView />
+  <div>
+    <!-- <RouterView /> -->
+  </div>
 </template>
 
-<style scoped></style>
+<style lang="less"></style>
