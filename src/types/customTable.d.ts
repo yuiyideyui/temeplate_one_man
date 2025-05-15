@@ -1,39 +1,54 @@
-
-export { };
+export {}
 
 declare global {
   type ItableHeader = {
-    prop: string;
-    label: string;
+    prop: string
+    label: string
     customList?: {
-      html?: (val: string, row: any) => string;
-      hDom?: (el: Element, binding: IbindingTable, Vnode: any, val: string, row: any) => void; //这里需要执行一个H函数--->render(h(ElButton, { class: 'bar', innerHTML: 'hello' }), el) 这里主要可以渲染一个组件
-      click?: (row: any) => void;
-    }[];
-    showOverflowTooltip?: boolean,
-    width?: string,
-    boxClass?: string;
-    boxStyle?: string;
-    itemClass?: string;
-    itemStyle?: string;
-  }[];
-  type IbindingTableValue = [(el: Element, binding: IbindingTable, Vnode: any, val: string, row: any) => void, string, any];
+      html?: (val: string, row: any) => string
+      hDom?: (
+        el: Element,
+        binding: IbindingTable,
+        Vnode: any,
+        val: string,
+        row: any,
+      ) => void //这里需要执行一个H函数--->render(h(ElButton, { class: 'bar', innerHTML: 'hello' }), el) 这里主要可以渲染一个组件
+      click?: (row: any) => void
+    }[]
+    showOverflowTooltip?: boolean
+    width?: string
+    boxClass?: string
+    boxStyle?: string
+    itemClass?: string
+    itemStyle?: string
+  }[]
+  type IbindingTableValue = [
+    (
+      el: Element,
+      binding: IbindingTable,
+      Vnode: any,
+      val: string,
+      row: any,
+    ) => void,
+    string,
+    any,
+  ]
   type IbindingTable = {
     //https://cn.vuejs.org/guide/reusability/custom-directives.html#custom-directives
-    value: IbindingTableValue;
-    oldValue: any;
-    arg: any;
-    modifiers: any;
-    instance: any;
-    dir: any;
-  };
+    value: IbindingTableValue
+    oldValue: any
+    arg: any
+    modifiers: any
+    instance: any
+    dir: any
+  }
   type IpaginationObj = {
-    page: string | number,
-    limit: string | number,
-    total?: string | number,
-    buildOrFloorId?: string[] | number[],
-    buildingId?: string[] | number[] | any,
-    floorId?: any,
-    subType?: any,
+    page: number
+    limit: number
+    total?: number
+    buildOrFloorId?: string[] | number[]
+    buildingId?: string[] | number[] | any
+    floorId?: any
+    subType?: any
   }
 }
