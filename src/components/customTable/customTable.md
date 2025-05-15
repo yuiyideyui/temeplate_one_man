@@ -15,7 +15,7 @@ customList文本与input编辑
 
 <script setup lang="ts">
 import { ElButton, ElInput } from 'element-plus'
-import customTable from './components/customTable.vue'
+import customTable from '@/components/customTable/customTable.vue'
 import {
   ref,
   h,
@@ -26,7 +26,6 @@ import {
   onDeactivated,
   type WatchHandle,
 } from 'vue'
-import type { Ibinding, ItableHeader } from './types/customTabled'
 
 const edit = ref(false)
 const showText = computed(() => {

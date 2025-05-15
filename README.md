@@ -55,19 +55,29 @@ const formattedContent = (el: Element, binding: IbindingDom, Vnode: any) => {
 
 ## 自定义表单dom
 
+在customTable.md
+
+## useQueryApi使用
+
+### 需要缓存的请求->缓存时间为staleTime 5分钟
+
 ```vue
 <template>
-  <div v-jsx-dom="[formattedContent]"></div>
+  <div></div>
 </template>
-<script setup lang="tsx">
-import { render } from 'vue'
-const formattedContent = (el: Element, binding: IbindingDom, Vnode: any) => {
-  render(
-    <div style="width: 100%; height: 100%; background: #000; color: #fff; display: flex; justify-content: center; align-items: center;">
-      Hello World
-    </div>,
-    el,
-  )
-}
+
+<script setup lang="ts">
+import { getSubDeviceList } from '@/api/test'
+import { useQueryApiStore } from '@/stores/useQueryApi'
+const queryApiStore = useQueryApiStore()
+const { isPending, isError, data, error } = queryApiStore.useTodos(
+  'getSubDeviceList',
+  getSubDeviceList,
+  {
+    limit: 1,
+  },
+)
 </script>
+
+<style scoped></style>
 ```
