@@ -54,27 +54,36 @@
     </template>
   </el-table>
   <Pagination
-    v-if="paginationObj"
+    v-if="my_paginationObj"
     @showDate="showDate"
-    :paginationObj="paginationObj"
+    :paginationObj="my_paginationObj"
   />
 </template>
 <script setup lang="ts">
 import Pagination from '@/components/Pagination/index.vue'
+import { useQueryApiStore } from '@/stores/useQueryApi'
+import { useMutation, useQuery } from '@tanstack/vue-query'
 import { computed, onActivated, onMounted, ref, toRef } from 'vue'
+const queryApiStore = useQueryApiStore()
+type customFetchData = {
+  fetchFn: (params: {
+    limit: number
+    page: number
+    [key: string]: any
+  }) => Promise<any>
+  fetchParams?: { [key: string]: any }
+  staleTime?: number
+}
 const props = withDefaults(
   defineProps<{
     tableData?: any
     tableHeader: ItableHeader
-    paginationObj?: IpaginationObj
+    paginationObj?: IpaginationObj | null
     selectable?: any[]
     type?: string
     rowKey?: string
-
-    customFetchData?: {
-      fetchFn: (params: any) => Promise<any>
-      fetchParams: any
-    }
+    tableLoading?: false
+    customFetchData?: customFetchData
     maxHeight?: string | '500px'
   }>(),
   {
@@ -85,9 +94,21 @@ const props = withDefaults(
 const emits = defineEmits(['pagData'])
 const customTableRef = ref()
 const customTabledData = ref<any>()
-const customListLoading = ref(false)
+const customListLoading = computed(() => {
+  // console.log('isPending', isPending)
+  if (props.customFetchData) {
+    if (data.value) {
+      initTableData()
+    }
+
+    return isFetching.value
+  } else {
+    return props.tableLoading
+  }
+})
 const tableDataComputed = computed(() => {
   if (props.customFetchData) {
+    //有自定义自动请求
     return customTabledData.value
   } else {
     return props.tableData
@@ -108,49 +129,82 @@ const vGetDom = {
   },
 }
 
-const paginationObj = toRef<IpaginationObj>(props.paginationObj)
+const my_paginationObj = toRef<IpaginationObj | null>(props.paginationObj)
 // 更新页数和条数
 const showDate = (data: IpaginationObj) => {
-  paginationObj.value.page = data.page
-  paginationObj.value.limit = data.limit
-  fetchData()
+  if (my_paginationObj.value) {
+    my_paginationObj.value = {
+      total: data.total,
+      page: data.page,
+      limit: data.limit,
+    }
+    fetchData()
+  }
+}
+
+const queryParams = ref({
+  limit: my_paginationObj.value?.limit,
+  page: my_paginationObj.value?.page,
+  ...props.customFetchData?.fetchParams,
+})
+function usePaginatedList(fetchFn: (params: IpaginationObj) => Promise<any>) {
+  if (props.customFetchData?.staleTime) {
+    return useQuery({
+      queryKey: ['paginated-list', queryParams.value],
+      queryFn: () => fetchFn(queryParams.value as IpaginationObj),
+      staleTime: props.customFetchData?.staleTime,
+      placeholderData: prevData => prevData, // 占位数据防止闪烁
+    })
+  } else {
+    return useQuery({
+      queryKey: ['paginated-list', queryParams.value],
+      queryFn: () => fetchFn(queryParams.value as IpaginationObj),
+    })
+  }
+}
+const { isFetching, refetch, data } = usePaginatedList(
+  props.customFetchData?.fetchFn as any,
+)
+const initTableData = () => {
+  if (props.customFetchData) {
+    customTabledData.value = data?.value.data.rows.map((item: any) => {
+      //单纯把空数据改成--
+      return Object.entries(item).reduce((acc: any, [key, value]) => {
+        acc[key] =
+          value === null || value === undefined || value === '' ? '--' : value
+        return acc
+      }, {})
+    })
+  }
 }
 const fetchData = () => {
   if (props.customFetchData) {
-    customListLoading.value = true
-    props.customFetchData
-      .fetchFn({
-        ...props.customFetchData.fetchParams,
-        page: paginationObj.value.page,
-        limit: paginationObj.value.limit,
-      })
-      .then((res: any) => {
-        if (res && res.code === 0) {
-          paginationObj.value.total = res.data.count
-          const processedData = res.data.row.map(item => {
-            return Object.entries(item).reduce((acc, [key, value]) => {
-              acc[key] =
-                value === null || value === undefined || value === ''
-                  ? '--'
-                  : value
-              return acc
-            }, {})
-          })
+    if (my_paginationObj.value) {
+      // 更新参数
+      // queryParams.value = {
+      //   limit: my_paginationObj.value?.limit,
+      //   page: my_paginationObj.value?.page,
+      //   ...props.customFetchData?.fetchParams,
+      // }
+      queryParams.value.page = my_paginationObj.value?.page
 
-          customTabledData.value = processedData
-        }
-      })
-      .finally(() => {
-        customListLoading.value = false
-      })
+      // 触发请求
+      // refetch().then(res => {
+      //   console.log('res', res)
+      //   initTableData(res.data)
+      // })
+    }
   } else {
-    emits('pagData', paginationObj.value)
+    emits('pagData', my_paginationObj.value)
   }
 }
 defineExpose({
   fetchData,
   customTableRef,
 })
+if (props.customFetchData) {
+  fetchData()
+}
 onActivated(() => {
   if (props.customFetchData) {
     fetchData()
