@@ -1,14 +1,6 @@
 <script setup lang="ts">
 import { ref, defineProps, defineEmits, watch } from 'vue'
-import { ElConfigProvider, ElPagination } from 'element-plus'
-import zhCn from 'element-plus/es/locale/lang/zh-cn'
-
-// **Props 类型定义**
-// interface IpaginationObj {
-//   page: number;
-//   limit: number;
-//   total?: number;
-// }
+import { ElPagination } from 'element-plus'
 
 const props = withDefaults(
   defineProps<{
@@ -25,7 +17,10 @@ const props = withDefaults(
   },
 )
 
-// **默认值与响应式数据**
+const emit = defineEmits<{
+  (e: 'showDate', paginationObj: IpaginationObj): void
+}>()
+
 const pagination = ref<IpaginationObj>({
   page: props.paginationObj?.page || 1,
   limit: props.paginationObj?.limit || 10,
@@ -33,34 +28,16 @@ const pagination = ref<IpaginationObj>({
 })
 
 const pagesizes = props.pagesizes || [10, 30, 50, 70, 90]
-const small = ref(true)
 
-// **事件触发**
-const emit = defineEmits<{
-  (e: 'showDate', paginationObj: IpaginationObj): void
-}>()
-
-// **每页条数改变处理**
-const handleSizeChange = (val: number) => {
-  pagination.value.limit = val
-  handleCurrentChange(pagination.value.page)
-}
-
-// **当前页改变处理**
-const handleCurrentChange = (val: number) => {
-  pagination.value.page = val
-  emit('showDate', pagination.value)
-}
-
-// **监听 `paginationObj` 的变化**
+// ✅ 当页数或页容量发生变化时，统一触发事件
 watch(
-  () => props.paginationObj,
-  newVal => {
-    if (newVal) {
-      pagination.value = { ...pagination.value, ...newVal }
-    }
+  () => pagination.value,
+  val => {
+    emit('showDate', val)
   },
-  { deep: true },
+  {
+    deep: true,
+  },
 )
 </script>
 
@@ -69,28 +46,20 @@ watch(
     class="flex justify-content-flex-end paginationCus"
     style="padding-top: 20px"
   >
-    <ElConfigProvider :locale="zhCn">
-      <el-pagination
-        :hide-on-single-page="false"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :pager-count="pagerCount"
-        background
-        :current-page="pagination.page"
-        :page-sizes="pagesizes"
-        :page-size="pagination.limit"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="pagination.total"
-      />
-    </ElConfigProvider>
+    <el-pagination
+      :hide-on-single-page="false"
+      v-model:current-page="pagination.page"
+      v-model:page-size="pagination.limit"
+      :pager-count="pagerCount"
+      :page-sizes="pagesizes"
+      :total="pagination.total"
+      background
+      layout="total, sizes, prev, pager, next, jumper"
+    />
   </div>
 </template>
 
 <style lang="less">
-.is-last {
-  cursor: pointer;
-}
-
 .el-pagination.is-background .el-pager li:not(.is-disabled).is-active {
   background-color: #027e70;
 }
@@ -101,9 +70,6 @@ watch(
   :deep(.el-pagination) {
     display: flex;
     align-items: center;
-    //background: red;
-    // --el-pagination-button-width: v-bind(width);
-    // --el-pagination-button-height: v-bind(height);
   }
 }
 </style>

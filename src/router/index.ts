@@ -6,9 +6,14 @@ const router = createRouter({
     {
       path: '/',
       name: 'layout',
-      component: ()=>import('@/views/layout.vue')
+      component: () => import('@/views/layout.vue'),
     },
-  ]
+    {
+      path: '/yui',
+      name: 'yui',
+      component: () => import('@/views/yui.vue'),
+    },
+  ],
 })
 
 export default router

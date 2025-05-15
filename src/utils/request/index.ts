@@ -1,15 +1,12 @@
 import axios from 'axios'
 import { getToken } from '@/utils/auth/index'
-import { ElMessage } from 'element-plus'
 import { showMessage } from './status'
-// import { BACKEND_URL } from '../env'
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 const service = axios.create({
-  baseURL: BACKEND_URL,
+  baseURL: import.meta.env.VITE_APP_BASE_API,
   timeout: 60000,
   headers: {
-    'Content-Type': 'application/json'
-  }
+    'Content-Type': 'application/json',
+  },
 })
 // 发起请求之前的拦截器
 service.interceptors.request.use(
@@ -23,7 +20,7 @@ service.interceptors.request.use(
   },
   (error: any) => {
     Promise.reject(error)
-  }
+  },
 )
 // 响应拦截器
 service.interceptors.response.use(
