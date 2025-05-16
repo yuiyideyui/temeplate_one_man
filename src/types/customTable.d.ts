@@ -51,4 +51,19 @@ declare global {
     floorId?: any
     subType?: any
   }
+  type customFetchData = {
+    fetchFn: (params: {
+      limit: number
+      page: number
+      [key: string]: any //这里是fetchParams
+    }) => Promise<any>
+    /**请求的参数不包括page和limit */
+    fetchParams?: { [key: string]: any }
+    /**接口数据缓存的时间 */
+    staleTime?: number
+    /**接口名称用于缓存key匹配 */
+    queryKey: any
+    /**是否监听参数变化自动请求 */
+    isWatchParams?: boolean
+  }
 }

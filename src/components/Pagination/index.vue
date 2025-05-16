@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref, defineProps, defineEmits, watch } from 'vue'
+import { ref, defineProps, defineEmits, watch, onUnmounted } from 'vue'
 import { ElPagination } from 'element-plus'
-
 const props = withDefaults(
   defineProps<{
-    paginationObj: IpaginationObj
+    paginationObjPage: number
+    paginationObjLimit: number
+    paginationObjTotal: number
     pagesizes?: number[]
     pagerCount?: number
     width?: string
@@ -17,27 +18,28 @@ const props = withDefaults(
   },
 )
 
-const emit = defineEmits<{
-  (e: 'showDate', paginationObj: IpaginationObj): void
-}>()
+const emit = defineEmits([
+  'update:paginationObjPage',
+  'update:paginationObjPageLimit',
+])
+const currentPage = ref(props.paginationObjPage)
+const pageSize = ref(props.paginationObjLimit)
+// 派发事件给父组件
+const handleCurrentChange = (val: number) => {
+  emit('update:paginationObjPage', val)
+}
 
-const pagination = ref<IpaginationObj>({
-  page: props.paginationObj?.page || 1,
-  limit: props.paginationObj?.limit || 10,
-  total: props.paginationObj?.total || 0,
-})
-
-const pagesizes = props.pagesizes || [10, 30, 50, 70, 90]
-
-// ✅ 当页数或页容量发生变化时，统一触发事件
+const handleSizeChange = (val: number) => {
+  emit('update:paginationObjPageLimit', val)
+}
+// 同步 props 改变
 watch(
-  () => pagination.value,
-  val => {
-    emit('showDate', val)
-  },
-  {
-    deep: true,
-  },
+  () => props.paginationObjPage,
+  val => (currentPage.value = val),
+)
+watch(
+  () => props.paginationObjLimit,
+  val => (pageSize.value = val),
 )
 </script>
 
@@ -48,11 +50,13 @@ watch(
   >
     <el-pagination
       :hide-on-single-page="false"
-      v-model:current-page="pagination.page"
-      v-model:page-size="pagination.limit"
+      v-model:current-page="currentPage"
+      v-model:page-size="pageSize"
+      @current-change="handleCurrentChange"
+      @size-change="handleSizeChange"
       :pager-count="pagerCount"
       :page-sizes="pagesizes"
-      :total="pagination.total"
+      :total="paginationObjTotal"
       background
       layout="total, sizes, prev, pager, next, jumper"
     />

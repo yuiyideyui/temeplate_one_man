@@ -4,6 +4,7 @@ import { getSub, getSubDeviceList } from '@/api/test'
 import { computed, onMounted, ref } from 'vue'
 import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
 import { useQueryApiStore } from '@/stores/useQueryApi'
+import Yui from './views/yui.vue'
 const queryApiStore = useQueryApiStore()
 const router = useRouter()
 
@@ -45,7 +46,9 @@ onMounted(() => {
     }}
   </ul>
   <div>
-    <RouterView />
+    <!-- <RouterView /> -->
+    <Yui></Yui>
+    <Yui></Yui>
     <VueQueryDevtools></VueQueryDevtools>
   </div>
 </template>

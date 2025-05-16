@@ -40,7 +40,7 @@
                 :key="index + 'b'"
                 :class="item.itemClass || ''"
                 :style="item.itemStyle"
-                v-get-dom="[custom.hDom, scope.row[item.prop], scope.row]"
+                v-jsx-table="[custom.hDom, scope.row[item.prop], scope.row]"
                 @click="
                   custom.click
                     ? (custom.click(scope.row), $event.stopPropagation())
@@ -56,24 +56,16 @@
   <Pagination
     v-if="my_paginationObj"
     @showDate="showDate"
-    :paginationObj="my_paginationObj"
+    v-model:paginationObjPage="paginationObjPage"
+    v-model:paginationObjLimit="paginationObjLimit"
+    :paginationObjTotal="paginationObjTotal"
   />
 </template>
 <script setup lang="ts">
 import Pagination from '@/components/Pagination/index.vue'
-import { useQueryApiStore } from '@/stores/useQueryApi'
-import { useMutation, useQuery } from '@tanstack/vue-query'
-import { computed, onActivated, onMounted, ref, toRef } from 'vue'
-const queryApiStore = useQueryApiStore()
-type customFetchData = {
-  fetchFn: (params: {
-    limit: number
-    page: number
-    [key: string]: any
-  }) => Promise<any>
-  fetchParams?: { [key: string]: any }
-  staleTime?: number
-}
+import { useQuery } from '@tanstack/vue-query'
+import { computed, onActivated, ref, toRef, watch } from 'vue'
+
 const props = withDefaults(
   defineProps<{
     tableData?: any
@@ -91,16 +83,43 @@ const props = withDefaults(
     paginationObj: null,
   },
 )
+let watchParams = () => {}
+if (props.customFetchData?.isWatchParams) {
+  watchParams = watch(
+    () => props.customFetchData?.fetchParams,
+    () => {
+      fetchData()
+    },
+    {
+      deep: true,
+    },
+  )
+}
 const emits = defineEmits(['pagData'])
 const customTableRef = ref()
-const customTabledData = ref<any>()
-const customListLoading = computed(() => {
-  // console.log('isPending', isPending)
+const customTabledData = computed(() => {
   if (props.customFetchData) {
-    if (data.value) {
-      initTableData()
+    if (data?.value) {
+      if (my_paginationObj.value) {
+        my_paginationObj.value.total = data.value.data.count
+      }
+      return data?.value.data.rows.map((item: any) => {
+        //单纯把空数据改成--
+        return Object.entries(item).reduce((acc: any, [key, value]) => {
+          acc[key] =
+            value === null || value === undefined || value === '' ? '--' : value
+          return acc
+        }, {})
+      })
+    } else {
+      return []
     }
-
+  } else {
+    return []
+  }
+})
+const customListLoading = computed(() => {
+  if (props.customFetchData) {
     return isFetching.value
   } else {
     return props.tableLoading
@@ -114,22 +133,32 @@ const tableDataComputed = computed(() => {
     return props.tableData
   }
 })
-const vGetDom = {
-  mounted: (el: Element, binding: IbindingTable, Vnode: any) => {
-    const renderContent = () => {
-      binding.value[0](el, binding, Vnode, binding.value[1], binding.value[2])
-    }
-    renderContent()
-  },
-  updated: (el: Element, binding: IbindingTable, Vnode: any) => {
-    const renderContent = () => {
-      binding.value[0](el, binding, Vnode, binding.value[1], binding.value[2])
-    }
-    renderContent()
-  },
-}
-
 const my_paginationObj = toRef<IpaginationObj | null>(props.paginationObj)
+const paginationObjPage = computed({
+  get: () => {
+    return my_paginationObj.value?.page as number
+  },
+  set: val => {
+    if (my_paginationObj.value) {
+      my_paginationObj.value.page = val
+      fetchData()
+    }
+  },
+})
+const paginationObjLimit = computed({
+  get: () => {
+    return my_paginationObj.value?.limit as number
+  },
+  set: val => {
+    if (my_paginationObj.value) {
+      my_paginationObj.value.limit = val
+      fetchData()
+    }
+  },
+})
+const paginationObjTotal = computed(() => {
+  return my_paginationObj.value?.total as number
+})
 // 更新页数和条数
 const showDate = (data: IpaginationObj) => {
   if (my_paginationObj.value) {
@@ -147,52 +176,41 @@ const queryParams = ref({
   page: my_paginationObj.value?.page,
   ...props.customFetchData?.fetchParams,
 })
+const queryKey = ref<any>([props.customFetchData?.queryKey, queryParams.value])
+watch(
+  () => queryParams.value,
+  newVal => {
+    queryKey.value = [props.customFetchData?.queryKey, newVal]
+  },
+)
 function usePaginatedList(fetchFn: (params: IpaginationObj) => Promise<any>) {
   if (props.customFetchData?.staleTime) {
     return useQuery({
-      queryKey: ['paginated-list', queryParams.value],
+      queryKey,
       queryFn: () => fetchFn(queryParams.value as IpaginationObj),
       staleTime: props.customFetchData?.staleTime,
       placeholderData: prevData => prevData, // 占位数据防止闪烁
     })
   } else {
     return useQuery({
-      queryKey: ['paginated-list', queryParams.value],
+      queryKey,
       queryFn: () => fetchFn(queryParams.value as IpaginationObj),
+      placeholderData: prevData => prevData, // 占位数据防止闪烁
     })
   }
 }
-const { isFetching, refetch, data } = usePaginatedList(
+const { isFetching, data } = usePaginatedList(
   props.customFetchData?.fetchFn as any,
 )
-const initTableData = () => {
-  if (props.customFetchData) {
-    customTabledData.value = data?.value.data.rows.map((item: any) => {
-      //单纯把空数据改成--
-      return Object.entries(item).reduce((acc: any, [key, value]) => {
-        acc[key] =
-          value === null || value === undefined || value === '' ? '--' : value
-        return acc
-      }, {})
-    })
-  }
-}
 const fetchData = () => {
   if (props.customFetchData) {
     if (my_paginationObj.value) {
       // 更新参数
-      // queryParams.value = {
-      //   limit: my_paginationObj.value?.limit,
-      //   page: my_paginationObj.value?.page,
-      //   ...props.customFetchData?.fetchParams,
-      // }
-      queryParams.value.page = my_paginationObj.value?.page
-
-      // 触发请求
-      // refetch().then(res => {
-      //   console.log('res', res)
-      //   initTableData(res.data)
-      // })
+      queryParams.value = {
+        limit: my_paginationObj.value?.limit,
+        page: my_paginationObj.value?.page,
+        ...props.customFetchData?.fetchParams,
+      }
     }
   } else {
     emits('pagData', my_paginationObj.value)

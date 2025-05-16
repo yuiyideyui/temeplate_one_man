@@ -23,6 +23,7 @@ import {
   onDeactivated,
   type WatchHandle,
   nextTick,
+  reactive,
 } from 'vue'
 import { getSubDeviceList } from '@/api/test'
 
@@ -41,12 +42,22 @@ const paginationObj = ref({
   limit: 3,
   total: 100,
 })
-const customFetchData = {
+const customFetchData = ref<customFetchData>({
   fetchFn: (params: { limit: number; page: number }) => {
     return getSubDeviceList(params)
   },
-  fetchParams: {},
-}
+  fetchParams: {
+    yui: 1,
+  },
+  staleTime: 10000,
+  queryKey: '1',
+  isWatchParams: true,
+})
+setTimeout(() => {
+  if (customFetchData.value.fetchParams) {
+    customFetchData.value.fetchParams.yui = '--'
+  }
+}, 3000)
 const tableData: any[] = []
 const tableHeader: ItableHeader = [
   {
