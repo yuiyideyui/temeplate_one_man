@@ -1,38 +1,21 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-type InowPlane = {
-  left?: string,
-  right?: string,
-  center?: string,
-}
-type IplaneMsg = {
-  /**历史的plane */
-  historyPlane: {
-    name?: string,
-    left?: string,
-    right?: string,
-    center?: string,
-  }[],
-  /**当前的plane */
-  nowPlane: InowPlane,
-  /**当前的主题 */
-  theme: string,
-}
 export const usePlaneStore = defineStore('plane', () => {
   const planeMsg = ref<IplaneMsg>({
-    historyPlane: [{
-      left: 'home',
-      center: 'home',
-      right: 'home'
-    }],
+    historyPlane: [
+      {
+        left: 'home',
+        center: 'home',
+        right: 'home',
+      },
+    ],
     nowPlane: {
       left: 'home',
       center: 'home',
-      right: 'home'
+      right: 'home',
     },
-    theme: 'home'
+    theme: 'home',
   })
-
 
   /**改变当前的plane */
   const changeNowPlane = (val: InowPlane) => {
@@ -60,6 +43,6 @@ export const usePlaneStore = defineStore('plane', () => {
     planeMsg,
     changeNowPlane,
     changeTheme,
-    backPlane
+    backPlane,
   }
 })

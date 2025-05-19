@@ -1,20 +1,24 @@
 {
+    "files": [],
+    "references": [
+        {
+            "path": "./tsconfig.node.json"
+        },
+        {
+            "path": "./tsconfig.app.json"
+        },
+        {
+            "path": "./tsconfig.vitest.json"
+        }
+    ],
     "compilerOptions": {
-        "baseUrl": "./",
         "paths": {
-            "@/*": [
-                "./src/*"
+            "vuex": [
+                "./node_modules/vuex/types"
             ]
         },
-        "allowSyntheticDefaultImports": true,
-    },
-    "include": [
-        "src/**/*.ts",
-        "src/**/*.d.ts",
-        "src/**/*.tsx",
-        "src/**/*.vue"
-    ],
-    "exclude": [
-        "node_modules"
-    ]
+        "types": [
+            "./types/customTabled.d.ts"
+        ]
+    }
 }
