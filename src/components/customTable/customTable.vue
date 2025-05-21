@@ -64,7 +64,7 @@
 <script setup lang="ts">
 import Pagination from '@/components/Pagination/index.vue'
 import { useQuery } from '@tanstack/vue-query'
-import { computed, onActivated, ref, toRef, watch } from 'vue'
+import { computed, onActivated, onUnmounted, ref, toRef, watch } from 'vue'
 
 const props = withDefaults(
   defineProps<{
@@ -75,26 +75,15 @@ const props = withDefaults(
     type?: string
     rowKey?: string
     tableLoading?: false
-    customFetchData?: customFetchData
+    customFetchData?: customFetchData<any>
     maxHeight?: string | '500px'
   }>(),
   {
     rowKey: 'id',
     paginationObj: null,
+    tableData: () => [],
   },
 )
-let watchParams = () => {}
-if (props.customFetchData?.isWatchParams) {
-  watchParams = watch(
-    () => props.customFetchData?.fetchParams,
-    () => {
-      fetchData()
-    },
-    {
-      deep: true,
-    },
-  )
-}
 const emits = defineEmits(['pagData'])
 const customTableRef = ref()
 const customTabledData = computed(() => {
@@ -171,33 +160,22 @@ const showDate = (data: IpaginationObj) => {
   }
 }
 
-const queryParams = ref({
+const queryParams = computed(() => ({
   limit: my_paginationObj.value?.limit,
   page: my_paginationObj.value?.page,
   ...props.customFetchData?.fetchParams,
-})
-const queryKey = ref<any>([props.customFetchData?.queryKey, queryParams.value])
-watch(
-  () => queryParams.value,
-  newVal => {
-    queryKey.value = [props.customFetchData?.queryKey, newVal]
-  },
-)
+}))
+const queryKey = computed(() => [
+  props.customFetchData?.queryKey,
+  queryParams.value,
+])
 function usePaginatedList(fetchFn: (params: IpaginationObj) => Promise<any>) {
-  if (props.customFetchData?.staleTime) {
-    return useQuery({
-      queryKey,
-      queryFn: () => fetchFn(queryParams.value as IpaginationObj),
-      staleTime: props.customFetchData?.staleTime,
-      placeholderData: prevData => prevData, // 占位数据防止闪烁
-    })
-  } else {
-    return useQuery({
-      queryKey,
-      queryFn: () => fetchFn(queryParams.value as IpaginationObj),
-      placeholderData: prevData => prevData, // 占位数据防止闪烁
-    })
-  }
+  return useQuery({
+    queryKey,
+    queryFn: () => fetchFn(queryParams.value as IpaginationObj),
+    staleTime: props.customFetchData?.staleTime ?? 0,
+    placeholderData: prevData => prevData, // 防止闪烁
+  })
 }
 const { isFetching, data } = usePaginatedList(
   props.customFetchData?.fetchFn as any,
@@ -205,12 +183,13 @@ const { isFetching, data } = usePaginatedList(
 const fetchData = () => {
   if (props.customFetchData) {
     if (my_paginationObj.value) {
+      //这里改成自动computed监听自动刷新接口
       // 更新参数
-      queryParams.value = {
-        limit: my_paginationObj.value?.limit,
-        page: my_paginationObj.value?.page,
-        ...props.customFetchData?.fetchParams,
-      }
+      // queryParams.value = {
+      //   limit: my_paginationObj.value?.limit,
+      //   page: my_paginationObj.value?.page,
+      //   ...props.customFetchData?.fetchParams,
+      // }
     }
   } else {
     emits('pagData', my_paginationObj.value)

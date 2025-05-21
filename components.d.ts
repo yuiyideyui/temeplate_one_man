@@ -11,7 +11,6 @@ declare module 'vue' {
     CenterPlane: typeof import('./src/components/plane/centerPlane.vue')['default']
     CustomTable: typeof import('./src/components/customTable/customTable.vue')['default']
     CustomTable2: typeof import('./src/components/customTable/customTable2.vue')['default']
-    ElSwitch: typeof import('element-plus/es')['ElSwitch']
     ElTable: typeof import('element-plus/es')['ElTable']
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     LeftPlane: typeof import('./src/components/plane/leftPlane.vue')['default']

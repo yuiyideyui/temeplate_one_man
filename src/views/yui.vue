@@ -42,22 +42,28 @@ const paginationObj = ref({
   limit: 3,
   total: 100,
 })
-const customFetchData = ref<customFetchData>({
+const customFetchData = ref<
+  customFetchData<{
+    yui: number | string
+    cc: number | string
+  }>
+>({
   fetchFn: (params: { limit: number; page: number }) => {
     return getSubDeviceList(params)
   },
   fetchParams: {
     yui: 1,
+    cc: 1,
   },
   staleTime: 10000,
   queryKey: '1',
-  isWatchParams: true,
 })
 setTimeout(() => {
   if (customFetchData.value.fetchParams) {
     customFetchData.value.fetchParams.yui = '--'
+    customFetchData.value.fetchParams.cc = '-123-'
   }
-}, 3000)
+}, 4000)
 const tableData: any[] = []
 const tableHeader: ItableHeader = [
   {
