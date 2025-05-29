@@ -7,6 +7,7 @@
     v-loading="customListLoading"
     :row-key="rowKey"
     ref="customTableRef"
+    :tree-props="treeProps"
   >
     <el-table-column v-if="type === 'selection'" type="selection" width="55" />
     <template v-for="item in tableHeader">
@@ -61,7 +62,7 @@
     :paginationObjTotal="paginationObjTotal"
   />
 </template>
-<script setup lang="ts">
+<script setup lang="tsx">
 import Pagination from '@/components/Pagination/index.vue'
 import { useQuery } from '@tanstack/vue-query'
 import { computed, onActivated, onUnmounted, ref, toRef, watch } from 'vue'
@@ -77,6 +78,11 @@ const props = withDefaults(
     tableLoading?: false
     customFetchData?: customFetchData<any>
     maxHeight?: string | '500px'
+    /**表单树 */
+    treeProps?: {
+      children: string
+      hasChildren: string
+    }
   }>(),
   {
     rowKey: 'id',
@@ -175,6 +181,9 @@ function usePaginatedList(fetchFn: (params: IpaginationObj) => Promise<any>) {
     queryFn: () => fetchFn(queryParams.value as IpaginationObj),
     staleTime: props.customFetchData?.staleTime ?? 0,
     placeholderData: prevData => prevData, // 防止闪烁
+    refetchOnWindowFocus: props.customFetchData?.refetchOnWindowFocus
+      ? true
+      : false, // ✅ 关闭页面聚焦重新请求
   })
 }
 const { isFetching, data } = usePaginatedList(
@@ -183,13 +192,6 @@ const { isFetching, data } = usePaginatedList(
 const fetchData = () => {
   if (props.customFetchData) {
     if (my_paginationObj.value) {
-      //这里改成自动computed监听自动刷新接口
-      // 更新参数
-      // queryParams.value = {
-      //   limit: my_paginationObj.value?.limit,
-      //   page: my_paginationObj.value?.page,
-      //   ...props.customFetchData?.fetchParams,
-      // }
     }
   } else {
     emits('pagData', my_paginationObj.value)

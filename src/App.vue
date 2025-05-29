@@ -48,7 +48,7 @@ onMounted(() => {
   <div>
     <!-- <RouterView /> -->
     <Yui></Yui>
-    <Yui></Yui>
+    <!-- <Yui></Yui> -->
     <VueQueryDevtools></VueQueryDevtools>
   </div>
 </template>

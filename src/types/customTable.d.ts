@@ -66,5 +66,7 @@ declare global {
     staleTime?: number
     /**接口名称用于缓存key匹配 */
     queryKey: any
+    /**页面聚焦重新请求-默认true */
+    refetchOnWindowFocus?: boolean
   }
 }

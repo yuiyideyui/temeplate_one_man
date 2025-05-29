@@ -17,6 +17,9 @@ export const getSubDeviceList = (data: {
     rows: any[]
   }>
 > => {
+  // return new Promise((resolve)=>{
+  //   resolve()
+  // })
   return request({
     url: '/security/securityCtr/subDeviceList',
     method: 'post',
