@@ -5,10 +5,6 @@
       :tableHeader="tableHeader"
       :customFetchData="customFetchData"
       :paginationObj="paginationObj"
-      :treeProps="{
-        children: 'subList',
-        hasChildren: 'hasChildren',
-      }"
     ></customTable>
     <div @click="startEdit">{{ edit ? '取消' : '编辑' }}</div>
   </div>
@@ -83,7 +79,8 @@ const tableHeader: ItableHeader = [
   {
     prop: 'name',
     label: 'name',
-    boxStyle: 'display:inline-block',
+    showOverflowTooltip: true,
+    width: '80px',
     customList: [
       {
         hDom: (
@@ -94,8 +91,8 @@ const tableHeader: ItableHeader = [
           row: any,
         ) => {
           render(
-            <div key={row['id']}>
-              <div
+            <>
+              <span
                 class={['classShow', 'showText']}
                 data-id={'showText ' + row['id']}
                 onClick={() =>
@@ -106,7 +103,7 @@ const tableHeader: ItableHeader = [
                 }
               >
                 {row['name']}
-              </div>
+              </span>
               <div
                 data-id={'showInput ' + row['id']}
                 class={['classHidden', 'showInput']}
@@ -125,7 +122,7 @@ const tableHeader: ItableHeader = [
                   }
                 ></ElInput>
               </div>
-            </div>,
+            </>,
             el,
           )
         },
@@ -145,7 +142,7 @@ const tableHeader: ItableHeader = [
 // }
 :deep(.classShow) {
   //display: v-bind(showText);
-  display: block;
+  display: unset;
   line-height: 32px;
   width: 100%;
   &.edit {

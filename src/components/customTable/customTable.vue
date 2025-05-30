@@ -18,38 +18,34 @@
         :width="item.width"
       >
         <template #default="scope" v-if="item.customList">
-          <div :class="item.boxClass || ''" :style="item.boxStyle">
-            <template v-for="(custom, index) in item.customList">
-              <div
-                v-if="custom.html"
-                :key="index + 'a'"
-                :class="item.itemClass || ''"
-                :style="item.itemStyle"
-                v-html="
-                  custom.html
-                    ? custom.html(scope.row[item.prop], scope.row)
-                    : ''
-                "
-                @click="
-                  custom.click
-                    ? (custom.click(scope.row), $event.stopPropagation())
-                    : ''
-                "
-              ></div>
-              <div
-                v-else-if="custom.hDom"
-                :key="index + 'b'"
-                :class="item.itemClass || ''"
-                :style="item.itemStyle"
-                v-jsx-table="[custom.hDom, scope.row[item.prop], scope.row]"
-                @click="
-                  custom.click
-                    ? (custom.click(scope.row), $event.stopPropagation())
-                    : ''
-                "
-              ></div>
-            </template>
-          </div>
+          <template v-for="(custom, index) in item.customList">
+            <span
+              v-if="custom.html"
+              :key="index + 'a'"
+              :class="item.boxClass || ''"
+              :style="item.boxStyle"
+              v-html="
+                custom.html ? custom.html(scope.row[item.prop], scope.row) : ''
+              "
+              @click="
+                custom.click
+                  ? (custom.click(scope.row), $event.stopPropagation())
+                  : ''
+              "
+            ></span>
+            <span
+              v-else-if="custom.hDom"
+              :key="index + 'b'"
+              :class="item.boxClass || ''"
+              :style="item.boxStyle"
+              v-jsx-table="[custom.hDom, scope.row[item.prop], scope.row]"
+              @click="
+                custom.click
+                  ? (custom.click(scope.row), $event.stopPropagation())
+                  : ''
+              "
+            ></span>
+          </template>
         </template>
       </el-table-column>
     </template>
@@ -177,6 +173,7 @@ const queryKey = computed(() => [
 ])
 function usePaginatedList(fetchFn: (params: IpaginationObj) => Promise<any>) {
   return useQuery({
+    //参数改变自动请求
     queryKey,
     queryFn: () => fetchFn(queryParams.value as IpaginationObj),
     staleTime: props.customFetchData?.staleTime ?? 0,

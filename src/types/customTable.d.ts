@@ -19,8 +19,6 @@ declare global {
     width?: string
     boxClass?: string
     boxStyle?: string
-    itemClass?: string
-    itemStyle?: string
   }[]
   type IbindingTableValue = [
     (
