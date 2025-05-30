@@ -10,11 +10,11 @@
       <div class="com-Main">
         <img
           class="image"
-          :src="isGrayscale ? defaultImage : selectImage"
+          :src="disabled ? defaultImage : selectImg"
           alt="comImage"
           @click="toggleGrayscale"
         />
-        <p class="title">{{ comTitle }}</p>
+        <p :class="['title', disabled ? '' : 'active']">{{ comTitle }}</p>
 
         <!-- 气泡 -->
 
@@ -22,50 +22,17 @@
           class="custom-popover"
           ref="popover"
           :class="{ show: showPopover }"
+          v-if="vif_layerList"
         >
-          <div
-            v-for="(item, index) in layerList"
-            :key="index"
+          <LayerItem
             class="layer-item"
+            v-for="item in layerList"
+            :key="item.id"
+            :item="item"
+            :parent="layerList"
+            @check-change="handleChildCheckChange"
           >
-            <!-- 父级 -->
-            <div class="parent-item">
-              <input
-                class="checkbox"
-                type="checkbox"
-                v-model="item.checked"
-                @change="handleParentCheckChange(item.id)"
-              />
-              <!-- <span class="child-show" v-show="item.children" @click="toggleChildrenVisibility(item)">{{
-                item.isChildVisible ? '-' : '+' }}</span> -->
-              <span class="layer-name">{{ item.layerName }}</span>
-            </div>
-            <!-- 子级 -->
-            <transition name="fade-slide">
-              <div
-                v-if="
-                  item.isChildVisible &&
-                  item.children &&
-                  item.children.length > 0
-                "
-                class="children-list"
-              >
-                <div
-                  v-for="(child, childIndex) in item.children"
-                  :key="childIndex"
-                  class="child-item"
-                >
-                  <input
-                    class="checkbox"
-                    type="checkbox"
-                    v-model="child.checked"
-                    @change="handleChildCheckChange(item, child)"
-                  />
-                  <span>{{ child.layerName }}</span>
-                </div>
-              </div>
-            </transition>
-          </div>
+          </LayerItem>
         </div>
       </div>
     </div>
@@ -73,17 +40,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref, type PropType, defineEmits } from 'vue'
-
+import { computed, ref, toRefs, reactive } from 'vue'
+import LayerItem from './LayerItem.vue'
 // 接收 props
-defineProps({
-  defaultImage: { type: String, default: '' },
-  selectImage: { type: String, default: '' },
-  comTitle: { type: String, default: '暂无标题' },
+const props = defineProps({
+  // defaultImage: { type: String, default: '' },
+  // selectImg: { type: String, default: '' },
+  // comTitle: { type: String, default: '暂无标题' },
   width: { type: String, default: '500px' },
   height: { type: String, default: '500px' },
-  layerList: { type: Array as PropType<PopoverList[]>, default: () => [] },
+  // layerList: { type: Array as PropType<PopoverList[]>, default: () => [] },
+  buttonData: { type: Object as () => ButtonData, default: () => {} },
 })
+const buttonData = reactive(props.buttonData)
+interface ButtonData {
+  defaultImage: string
+  selectImg: string
+  comTitle: string
+  layerList: PopoverList[]
+  disabled?: boolean
+}
+const {
+  defaultImage,
+  selectImg,
+  comTitle,
+  layerList,
+  disabled = ref(false),
+} = toRefs(buttonData)
+
 interface PopoverList {
   id: string
   layerName: string
@@ -91,18 +75,22 @@ interface PopoverList {
   children?: Array<any>
   isShow: boolean
   type: number
-  img: string
-  imgType: number
+  img?: string
   isChildVisible?: boolean
 }
+const emit = defineEmits(['toggleGrayscale', 'parentChecked', 'childChecked'])
+//选择菜单是否展示
+const vif_layerList = computed(() => {
+  return layerList.value && layerList.value.length > 0
+})
+
 // 状态管理
-const isGrayscale = ref(true) // 图片是否黑白
 const showPopover = ref(false) // 气泡显示状态
-let hoverTimer = ref<NodeJS.Timeout | undefined>(undefined) // 定时器 ID
-let hideTimer = ref<NodeJS.Timeout | undefined>(undefined)
+let hoverTimer = ref<number | undefined>(undefined) // 定时器 ID
+let hideTimer = ref<number | undefined>(undefined)
 const popover = ref<HTMLElement | null>(null)
 const toggleGrayscale = () => {
-  isGrayscale.value = !isGrayscale.value
+  disabled.value = !disabled.value
   if (hideTimer) {
     clearTimeout(hideTimer.value) // 清除隐藏定时器
     hideTimer.value = undefined
@@ -111,15 +99,14 @@ const toggleGrayscale = () => {
     clearTimeout(hoverTimer.value) // 清除悬停定时器，避免重复触发
   }
   hoverTimer.value = setTimeout(() => {
-    !isGrayscale.value
-      ? (showPopover.value = true)
-      : (showPopover.value = false)
+    !disabled.value ? (showPopover.value = true) : (showPopover.value = false)
   }, 150)
+  emit('toggleGrayscale')
 }
 
 // 显示气泡（仅在彩色状态）
 const showBubble = () => {
-  if (!isGrayscale.value) {
+  if (!disabled.value) {
     if (hideTimer) {
       clearTimeout(hideTimer.value) // 清除隐藏定时器
       hideTimer.value = undefined
@@ -140,16 +127,15 @@ const hideBubble = () => {
     hoverTimer.value = undefined
   }
   hideTimer.value = setTimeout(() => {
-    showPopover.value = false
+    showPopover.value = true
   }, 150) // 延迟隐藏，避免闪烁
 }
 
-const emit = defineEmits()
 const handleParentCheckChange = (item: any) => {
   emit('parentChecked', item)
 }
-const handleChildCheckChange = (item: any, child: any) => {
-  emit('childChecked', { item, child })
+const handleChildCheckChange = (item: any, parent: any) => {
+  emit('childChecked', { item, parent })
 }
 
 const toggleChildrenVisibility = (item: PopoverList) => {
@@ -193,14 +179,15 @@ const toggleChildrenVisibility = (item: PopoverList) => {
     .title {
       text-align: center;
       font-size: 13px;
-      color: #56e1ff;
+      color: #979797;
+      &.active {
+        color: #56e1ff;
+      }
     }
 
-    .custom-popover {
+    :deep(.custom-popover) {
       box-sizing: border-box;
-      font-family:
-        Alibaba PuHuiTi,
-        Alibaba PuHuiTi;
+      font-family: 'webfont-regular', sans-serif;
       position: absolute;
       bottom: 100%;
       left: 50%;
@@ -209,8 +196,8 @@ const toggleChildrenVisibility = (item: PopoverList) => {
       background: #000d2f;
       border: 0.5px solid #33d4e9;
       border-radius: 5px;
-      box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
-      padding: 10px 12px 13px 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      padding: 10px 12px 3px 12px;
       color: #ffffff;
       opacity: 0;
       max-height: 0;
@@ -225,8 +212,9 @@ const toggleChildrenVisibility = (item: PopoverList) => {
       flex-direction: column;
       align-items: flex-start;
       white-space: nowrap;
-      width: 106px;
+      min-width: 106px;
       margin-bottom: 10px;
+      gap: 3px;
 
       &.show {
         opacity: 1;
@@ -242,19 +230,18 @@ const toggleChildrenVisibility = (item: PopoverList) => {
         background-size: contain;
         background-repeat: no-repeat;
         cursor: pointer;
-        width: 11px;
-        height: 11px;
+        width: 14px;
+        height: 14px;
         border: 1px solid #33d4e9;
         /* 边框颜色 */
         border-radius: 3px;
         background-color: #001622;
-        /* 默认背景颜色 */
-        background-size: contain;
-        background-repeat: no-repeat;
-        cursor: pointer;
+        margin-right: 5px;
         /* 默认未选中的背景图片 */
         background-image: url('@/assets/image/greenRoadPlanning/14.png');
-
+        &.indeterminateImg {
+          background-image: url('@/assets/image/greenRoadPlanning/13.png');
+        }
         &:checked {
           /* 选中状态的背景图片 */
           background-image: url('@/assets/image/greenRoadPlanning/15.png');
@@ -270,8 +257,11 @@ const toggleChildrenVisibility = (item: PopoverList) => {
         flex-direction: column;
         /* 子项在父项下方 */
         // margin-bottom: 8px;
-        gap: 8px;
-
+        gap: 3px;
+        .item-header {
+          display: flex;
+          align-items: center;
+        }
         .parent-item {
           display: flex;
           align-items: center;
@@ -314,6 +304,7 @@ const toggleChildrenVisibility = (item: PopoverList) => {
           margin-left: 30px;
           /* 子级缩进 */
           width: auto;
+          gap: 3px;
 
           /* 自动扩展宽度 */
           .child-item {

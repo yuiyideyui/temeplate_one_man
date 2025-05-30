@@ -46,10 +46,10 @@ onMounted(() => {
     }}
   </ul>
   <div>
-    <!-- <RouterView /> -->
-    <Yui></Yui>
+    <RouterView />
     <!-- <Yui></Yui> -->
-    <VueQueryDevtools></VueQueryDevtools>
+    <!-- <Yui></Yui> -->
+    <!-- <VueQueryDevtools></VueQueryDevtools> -->
   </div>
 </template>
 

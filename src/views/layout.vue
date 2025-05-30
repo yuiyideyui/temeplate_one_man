@@ -16,14 +16,12 @@
 
       <div class="footer-button">
         <MultiButton
-          v-for="(button, index) in footButton"
+          v-for="(button, index) in footButtons"
           :key="index"
           class="test"
-          :layerList="button.layerList"
-          :defaultImage="button.defaultImage"
-          :selectImage="button.selectImg"
-          :comTitle="button.comTitle"
-          @parentChecked="handleParentChecked"
+          :buttonData="button"
+          @childChecked="handleChildChecked($event, index)"
+          @toggleGrayscale="handleToggleGrayscale(index)"
         />
       </div>
     </div>
@@ -40,12 +38,65 @@ import centerPlane from '@/components/plane/centerPlane.vue'
 import MultiButton from '@/components/MultiButton/index.vue'
 import PageHeader from '@/components/PageHeader/index.vue'
 import { usePlaneStore } from '@/stores/planeStore'
-
+import {
+  selectAllChildren,
+  updateAllParentCheckedStatus,
+} from '@/components/MultiButton/selectFn'
 const planeStore = usePlaneStore()
 
-const handleParentChecked = (item: any) => {
-  console.log('选中的父级:', item)
-  console.log('footButton', footButton)
+const handleChildChecked = (
+  item: {
+    item: Type_MultiButton_children
+    parent: Type_MultiButton_children | Type_MultiButton
+  },
+  index: number,
+) => {
+  if (item.item.checked) {
+    if (item.item.showFn) item.item.showFn(item)
+  } else {
+    if (item.item.closeFn) item.item.closeFn(item)
+  }
+  updateAllParentCheckedStatus(footButtons.value)
+}
+const handleToggleGrayscale = (index: number) => {
+  if (
+    footButtons.value[index].default === 'allChecked' &&
+    !footButtons.value[index].disabled
+  ) {
+    footButtons.value[index].layerList.forEach(e => {
+      e.checked = true
+    })
+  }
+  if (footButtons.value[index].comTitle === '路网') {
+    // footButtons.value[index].disabled ? useCloseRoad() : useInitRoad()
+  } else if (footButtons.value[index].comTitle === '设备') {
+    if (!footButtons.value[index].disabled) {
+      footButtons.value[index].layerList.forEach((item, index) => {
+        if (item.checked) {
+          if (item.showFn) {
+            item.showFn()
+          }
+        } else {
+          if (item.closeFn) {
+            item.closeFn()
+          }
+        }
+      })
+    } else {
+      footButtons.value[index].layerList.forEach((item, index) => {
+        if (item.closeFn) {
+          item.closeFn()
+        }
+      })
+    }
+  } else if (footButtons.value[index].comTitle === '交叉口') {
+    if (footButtons.value[index].disabled) {
+      // dialogStore.dialog_com = ''
+      // useCloseJiaochakou()
+    } else {
+      // useShowJiaochakou()
+    }
+  }
 }
 const test2CahangePlane = () => {
   planeStore.changeNowPlane({
@@ -53,347 +104,150 @@ const test2CahangePlane = () => {
   })
 }
 
-const footButton = [
+const footButtons = ref<Type_MultiButton>([
   {
     comTitle: '路网',
     defaultImage: new URL(
-      `../assets/image/greenRoadPlanning/7_1.png`,
+      `@/assets/image/greenRoadPlanning/7_1.png`,
       import.meta.url,
     ).href,
+    disabled: false,
     selectImg: new URL(
-      `../assets/image/greenRoadPlanning/7.png`,
+      `@/assets/image/greenRoadPlanning/7.png`,
       import.meta.url,
     ).href,
-    layerList: [
-      {
-        id: '公安实有单位',
-        type: 14,
-        isShow: true,
-        layerName: '公安实有单位',
-        imgType: 2,
-        img: './img/organization/公安实有单位.png',
-      },
-      {
-        id: '市场主体',
-        type: 11,
-        isShow: true,
-        layerName: '市场主体',
-        imgType: 2,
-        img: './img/organization/市场主体.png',
-        children: [
-          {
-            id: '企业',
-            param: 'qy',
-            isShow: true,
-            layerName: '企业',
-            imgType: 2,
-            img: './img/organization/企业.png',
-          },
-          {
-            id: '个体户',
-            param: 'gth',
-            isShow: true,
-            layerName: '个体户',
-            imgType: 2,
-            img: './img/organization/个体户.png',
-          },
-        ],
-      },
-      {
-        id: '事业单位',
-        type: 1,
-        isShow: true,
-        layerName: '事业单位',
-        imgType: 2,
-        img: './img/organization/事业单位.png',
-      },
-      {
-        id: '行政单位',
-        type: 2,
-        isShow: true,
-        layerName: '行政单位',
-        imgType: 2,
-        img: './img/organization/行政单位.png',
-      },
-      {
-        id: '其他单位',
-        type: '',
-        isShow: true,
-        layerName: '其他单位',
-        imgType: 2,
-        img: './img/organization/其他单位.png',
-        children: [
-          {
-            id: '学校机构',
-            type: 3,
-            isShow: true,
-            layerName: '学校机构',
-            imgType: 2,
-            img: './img/organization/学校机构.png',
-          },
-          {
-            id: '污染源企业',
-            type: 9,
-            isShow: true,
-            layerName: '污染源企业',
-            imgType: 2,
-            img: './img/organization/污染源企业.png',
-          },
-          {
-            id: '医疗机构',
-            type: 10,
-            isShow: true,
-            layerName: '医疗机构',
-            imgType: 2,
-            img: './img/organization/医疗机构.png',
-          },
-          {
-            id: '社会组织',
-            type: 12,
-            isShow: true,
-            layerName: '社会组织',
-            imgType: 2,
-            img: './img/organization/社会组织.png',
-          },
-          {
-            id: '养老机构',
-            type: 13,
-            isShow: true,
-            layerName: '养老机构',
-            imgType: 2,
-            img: './img/organization/养老机构.png',
-          },
-        ],
-      },
-    ],
+    layerList: [],
   },
   {
+    disabled: true,
     comTitle: '设备',
     defaultImage: new URL(
-      `../assets/image/greenRoadPlanning/8_1.png`,
+      `@/assets/image/greenRoadPlanning/8_1.png`,
       import.meta.url,
     ).href,
     selectImg: new URL(
-      `../assets/image/greenRoadPlanning/8.png`,
+      `@/assets/image/greenRoadPlanning/8.png`,
       import.meta.url,
     ).href,
+    default: 'allChecked',
     layerList: [
       {
-        id: '公安实有单位',
+        id: '全选',
         type: 14,
-        isShow: true,
-        layerName: '公安实有单位',
-        imgType: 2,
-        img: './img/organization/公安实有单位.png',
-      },
-      {
-        id: '市场主体',
-        type: 11,
-        isShow: true,
-        layerName: '市场主体',
-        imgType: 2,
-        img: './img/organization/市场主体.png',
+        checked: false,
+        layerName: '全选',
+        showFn: item => {
+          if (item) {
+            selectAllChildren(item)
+          }
+        },
+        closeFn: item => {
+          if (item) {
+            selectAllChildren(item)
+          }
+        },
+        isChildVisible: true,
         children: [
           {
-            id: '企业',
-            param: 'qy',
-            isShow: true,
-            layerName: '企业',
-            imgType: 2,
-            img: './img/organization/企业.png',
+            id: '全选',
+            type: 14,
+            checked: false,
+            layerName: '全选',
+            showFn: item => {
+              if (item) {
+                selectAllChildren(item)
+              }
+            },
+            closeFn: item => {
+              if (item) {
+                selectAllChildren(item)
+              }
+            },
+            children: [
+              {
+                id: '全选',
+                type: 14,
+                checked: false,
+                layerName: '全选',
+                showFn: item => {
+                  if (item) {
+                    selectAllChildren(item)
+                  }
+                },
+                closeFn: item => {
+                  if (item) {
+                    selectAllChildren(item)
+                  }
+                },
+              },
+              {
+                id: '卡口',
+                type: 14,
+                checked: true,
+                layerName: '卡口',
+                showFn: () => {},
+                closeFn: () => {},
+              },
+              {
+                id: '信号机',
+                type: 14,
+                checked: true,
+                layerName: '信号机',
+                // showFn: useShowXinhaoji,
+                // closeFn: useCloseXinhaoji,
+              },
+            ],
           },
           {
-            id: '个体户',
-            param: 'gth',
-            isShow: true,
-            layerName: '个体户',
-            imgType: 2,
-            img: './img/organization/个体户.png',
+            id: '卡口',
+            type: 14,
+            checked: true,
+            layerName: '卡口',
+            showFn: () => {},
+            closeFn: () => {},
+          },
+          {
+            id: '信号机',
+            type: 14,
+            checked: true,
+            layerName: '信号机',
+            // showFn: useShowXinhaoji,
+            // closeFn: useCloseXinhaoji,
           },
         ],
       },
       {
-        id: '事业单位',
-        type: 1,
-        isShow: true,
-        layerName: '事业单位',
-        imgType: 2,
-        img: './img/organization/事业单位.png',
+        id: '卡口',
+        type: 14,
+        checked: true,
+        layerName: '卡口',
+        showFn: () => {},
+        closeFn: () => {},
       },
       {
-        id: '行政单位',
-        type: 2,
-        isShow: true,
-        layerName: '行政单位',
-        imgType: 2,
-        img: './img/organization/行政单位.png',
-      },
-      {
-        id: '其他单位',
-        type: '',
-        isShow: true,
-        layerName: '其他单位',
-        imgType: 2,
-        img: './img/organization/其他单位.png',
-        children: [
-          {
-            id: '学校机构',
-            type: 3,
-            isShow: true,
-            layerName: '学校机构',
-            imgType: 2,
-            img: './img/organization/学校机构.png',
-          },
-          {
-            id: '污染源企业',
-            type: 9,
-            isShow: true,
-            layerName: '污染源企业',
-            imgType: 2,
-            img: './img/organization/污染源企业.png',
-          },
-          {
-            id: '医疗机构',
-            type: 10,
-            isShow: true,
-            layerName: '医疗机构',
-            imgType: 2,
-            img: './img/organization/医疗机构.png',
-          },
-          {
-            id: '社会组织',
-            type: 12,
-            isShow: true,
-            layerName: '社会组织',
-            imgType: 2,
-            img: './img/organization/社会组织.png',
-          },
-          {
-            id: '养老机构',
-            type: 13,
-            isShow: true,
-            layerName: '养老机构',
-            imgType: 2,
-            img: './img/organization/养老机构.png',
-          },
-        ],
+        id: '信号机',
+        type: 14,
+        checked: true,
+        layerName: '信号机',
+        // showFn: useShowXinhaoji,
+        // closeFn: useCloseXinhaoji,
       },
     ],
   },
   {
+    disabled: true,
     comTitle: '交叉口',
     defaultImage: new URL(
-      `../assets/image/greenRoadPlanning/9_1.png`,
+      `@/assets/image/greenRoadPlanning/9_1.png`,
       import.meta.url,
     ).href,
     selectImg: new URL(
-      `../assets/image/greenRoadPlanning/9.png`,
+      `@/assets/image/greenRoadPlanning/9.png`,
       import.meta.url,
     ).href,
-    layerList: [
-      {
-        id: '公安实有单位',
-        type: 14,
-        isShow: true,
-        layerName: '公安实有单位',
-        imgType: 2,
-        img: './img/organization/公安实有单位.png',
-      },
-      {
-        id: '市场主体',
-        type: 11,
-        isShow: true,
-        layerName: '市场主体',
-        imgType: 2,
-        img: './img/organization/市场主体.png',
-        children: [
-          {
-            id: '企业',
-            param: 'qy',
-            isShow: true,
-            layerName: '企业',
-            imgType: 2,
-            img: './img/organization/企业.png',
-          },
-          {
-            id: '个体户',
-            param: 'gth',
-            isShow: true,
-            layerName: '个体户',
-            imgType: 2,
-            img: './img/organization/个体户.png',
-          },
-        ],
-      },
-      {
-        id: '事业单位',
-        type: 1,
-        isShow: true,
-        layerName: '事业单位',
-        imgType: 2,
-        img: './img/organization/事业单位.png',
-      },
-      {
-        id: '行政单位',
-        type: 2,
-        isShow: true,
-        layerName: '行政单位',
-        imgType: 2,
-        img: './img/organization/行政单位.png',
-      },
-      {
-        id: '其他单位',
-        type: '',
-        isShow: true,
-        layerName: '其他单位',
-        imgType: 2,
-        img: './img/organization/其他单位.png',
-        children: [
-          {
-            id: '学校机构',
-            type: 3,
-            isShow: true,
-            layerName: '学校机构',
-            imgType: 2,
-            img: './img/organization/学校机构.png',
-          },
-          {
-            id: '污染源企业',
-            type: 9,
-            isShow: true,
-            layerName: '污染源企业',
-            imgType: 2,
-            img: './img/organization/污染源企业.png',
-          },
-          {
-            id: '医疗机构',
-            type: 10,
-            isShow: true,
-            layerName: '医疗机构',
-            imgType: 2,
-            img: './img/organization/医疗机构.png',
-          },
-          {
-            id: '社会组织',
-            type: 12,
-            isShow: true,
-            layerName: '社会组织',
-            imgType: 2,
-            img: './img/organization/社会组织.png',
-          },
-          {
-            id: '养老机构',
-            type: 13,
-            isShow: true,
-            layerName: '养老机构',
-            imgType: 2,
-            img: './img/organization/养老机构.png',
-          },
-        ],
-      },
-    ],
+    layerList: [],
   },
-]
+])
 
 const fullEl = ref<HTMLElement | null>(null)
 const { toggle, isFullscreen } = useFullscreen(fullEl)

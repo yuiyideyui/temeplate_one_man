@@ -73,7 +73,7 @@ const props = withDefaults(
     rowKey?: string
     tableLoading?: false
     customFetchData?: customFetchData<any>
-    maxHeight?: string | '500px'
+    maxHeight?: string
     /**表单树 */
     treeProps?: {
       children: string
@@ -84,6 +84,7 @@ const props = withDefaults(
     rowKey: 'id',
     paginationObj: null,
     tableData: () => [],
+    maxHeight: '500px',
   },
 )
 const emits = defineEmits(['pagData'])
