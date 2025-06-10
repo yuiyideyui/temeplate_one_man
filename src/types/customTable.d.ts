@@ -4,6 +4,7 @@ declare global {
   type ItableHeader = {
     prop: string
     label: string
+    align?:string,
     customList?: {
       html?: (val: string, row: any) => string
       hDom?: (
@@ -50,7 +51,7 @@ declare global {
     subType?: any
   }
   type customFetchData<
-    Tparams extends Record<string, any> = Record<String, any>,
+    Tparams extends Record<string, any> = Record<string, any>,
   > = {
     fetchFn: (
       params: {
@@ -58,6 +59,8 @@ declare global {
         page: number
       } & Tparams,
     ) => Promise<any>
+    /**gctime */
+    gcTime?:number
     /**请求的参数不包括page和limit */
     fetchParams?: Omit<Tparams, 'limit' | 'page'>
     /**接口数据缓存的时间 */
