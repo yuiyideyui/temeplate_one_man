@@ -20,7 +20,7 @@
     "@vitejs/plugin-vue-jsx": "^4.1.2",
     "@vueuse/core": "^11.3.0",
     "axios": "^1.7.7",
-    "element-plus": "^2.8.5",
+    "element-plus": "^2.10.1",
     "pinia": "^2.2.4",
     "templateone": "file:",
     "vue": "^3.5.12",
