@@ -164,6 +164,7 @@ const customTabledData = computed(() => {
         my_paginationObj.value.total = data.value.data.count
       }
       return data?.value.data.map((item: any) => {
+      return data?.value.data.map((item: any) => {
         //单纯把空数据改成--
         return Object.entries(item).reduce((acc: any, [key, value]) => {
           acc[key] =
@@ -185,6 +186,9 @@ const customListLoading = computed(() => {
     return props.tableLoading
   }
 })
+const allData = ref([])
+const tableDataComputed = ref([])
+
 const allData = ref([])
 const tableDataComputed = ref([])
 
@@ -232,6 +236,7 @@ const queryParams = computed(() => ({
   ...props.customFetchData?.fetchParams,
 }))
 const queryKey = computed(() => [
+  props.customFetchData?.queryKey || generateUUID(),
   props.customFetchData?.queryKey || generateUUID(),
   queryParams.value,
 ])

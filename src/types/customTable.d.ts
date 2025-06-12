@@ -51,7 +51,7 @@ declare global {
     subType?: any
   }
   type customFetchData<
-    Tparams extends Record<string, any> = Record<String, any>,
+    Tparams extends Record<string, any> = Record<string, any>,
   > = {
     fetchFn: (
       params: {
