@@ -129,13 +129,8 @@ const rowClick = (row: any, column: any, event: any) => {
 //   // console.log('----')
 //   emits('scroll',scrollLeft,scrollTop)
 // }
-const handleScroll = ({
-  scrollTop,
-  scrollLeft,
-}: {
-  scrollTop: number
-  scrollLeft: number
-}) => {
+const handleScroll = ({ scrollTop, scrollLeft }) => {
+  console.log('---')
   const tableBody = customTableRef.value.$el?.querySelector(
     '.el-scrollbar__wrap',
   ) as HTMLElement
@@ -146,6 +141,7 @@ const handleScroll = ({
 
   const isBottom = scrollTop + clientHeight >= scrollHeight - 1
   if (isBottom) {
+    console.log('----')
     if (tableDataComputed.value.length >= allData.value.length) return // 已加载全部，停止加载
 
     // 加载更多数据
@@ -163,7 +159,6 @@ const customTabledData = computed(() => {
       if (my_paginationObj.value) {
         my_paginationObj.value.total = data.value.data.count
       }
-      return data?.value.data.map((item: any) => {
       return data?.value.data.map((item: any) => {
         //单纯把空数据改成--
         return Object.entries(item).reduce((acc: any, [key, value]) => {
@@ -186,9 +181,6 @@ const customListLoading = computed(() => {
     return props.tableLoading
   }
 })
-const allData = ref([])
-const tableDataComputed = ref([])
-
 const allData = ref([])
 const tableDataComputed = ref([])
 
@@ -236,7 +228,6 @@ const queryParams = computed(() => ({
   ...props.customFetchData?.fetchParams,
 }))
 const queryKey = computed(() => [
-  props.customFetchData?.queryKey || generateUUID(),
   props.customFetchData?.queryKey || generateUUID(),
   queryParams.value,
 ])

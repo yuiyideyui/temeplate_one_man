@@ -1,10 +1,18 @@
 import request from '@/utils/request/index'
+import { get } from '@/utils/request/index'
 
 export const getSub = () => {
-  return request({
-    url: 'api/SubGet',
-    method: 'get',
-    params: 'asmr',
+  // return request({
+  //   url: 'api/SubGet',
+  //   method: 'get',
+  //   params: 'asmr',
+  // })
+  return get<
+    ApiResponse<{
+      yui: string
+    }>
+  >('api/SubGet', {
+    asmr: 'asmr',
   })
 }
 

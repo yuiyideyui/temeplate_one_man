@@ -28,9 +28,9 @@ service.interceptors.response.use(
     // 如果返回的状态码为200，说明接口请求成功，可以正常拿到数据
     // 否则的话抛出错误
     if (response.status === 200) {
-      showMessage(response.data)
       return response.data
     } else {
+      showMessage(response.data)
       return Promise.reject(response.data)
     }
   },
@@ -47,4 +47,38 @@ service.interceptors.response.use(
 const request = (data: any): Promise<ApiResponse> => {
   return service(data)
 }
+export const get = <T = ApiResponse>(url: string, params?: any): Promise<T> => {
+  return service.get(url, { params })
+}
+
+export const post = <T = ApiResponse>(url: string, data?: any): Promise<T> => {
+  return service.post(url, data)
+}
+
+export const put = <T = ApiResponse>(url: string, data?: any): Promise<T> => {
+  return service.put(url, data)
+}
+
+export const del = <T = ApiResponse>(url: string, params?: any): Promise<T> => {
+  return service.delete(url, { params })
+}
+// // GET
+// get('/user/list', { page: 1 }).then(res => {
+//   console.log(res)
+// })
+
+// // POST
+// post('/user/create', { name: 'Tom' }).then(res => {
+//   console.log(res)
+// })
+
+// // PUT
+// put('/user/update', { id: 1, name: 'Jerry' }).then(res => {
+//   console.log(res)
+// })
+
+// // DELETE
+// del('/user/delete', { id: 1 }).then(res => {
+//   console.log(res)
+// })
 export default request

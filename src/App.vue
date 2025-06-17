@@ -1,7 +1,7 @@
 <script setup lang="tsx">
 import { RouterView, useRouter } from 'vue-router'
 import { getSub, getSubDeviceList } from '@/api/test'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, type Ref } from 'vue'
 import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
 import { useQueryApiStore } from '@/stores/useQueryApi'
 import Yui from './views/yui.vue'
@@ -34,7 +34,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <div @click="clickFn">11111111111</div>
+  <div @click="clickFn">
+    11111111111
+    <div flex="~" m-12>222</div>
+  </div>
   <span v-if="isPending">Loading...</span>
   <span v-else-if="isError">Error: {{ error?.message }}</span>
   <!-- We can assume by this point that `isSuccess === true` -->
@@ -46,7 +49,7 @@ onMounted(() => {
     }}
   </ul>
   <div>
-    <RouterView />
+    <!-- <RouterView /> -->
     <!-- <Yui></Yui> -->
     <!-- <Yui></Yui> -->
     <!-- <VueQueryDevtools></VueQueryDevtools> -->
