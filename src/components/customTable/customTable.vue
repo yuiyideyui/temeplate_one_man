@@ -129,8 +129,13 @@ const rowClick = (row: any, column: any, event: any) => {
 //   // console.log('----')
 //   emits('scroll',scrollLeft,scrollTop)
 // }
-const handleScroll = ({ scrollTop, scrollLeft }) => {
-  console.log('---')
+const handleScroll = ({
+  scrollTop,
+  scrollLeft,
+}: {
+  scrollTop: number
+  scrollLeft: number
+}) => {
   const tableBody = customTableRef.value.$el?.querySelector(
     '.el-scrollbar__wrap',
   ) as HTMLElement
@@ -141,7 +146,6 @@ const handleScroll = ({ scrollTop, scrollLeft }) => {
 
   const isBottom = scrollTop + clientHeight >= scrollHeight - 1
   if (isBottom) {
-    console.log('----')
     if (tableDataComputed.value.length >= allData.value.length) return // 已加载全部，停止加载
 
     // 加载更多数据
