@@ -1,8 +1,10 @@
+import type { DirectiveBinding } from 'vue'
+
 export default {
-  mounted(el: Element, binding: any, vnode: any) {
+  mounted(el: Element, binding: DirectiveBinding, vnode: any) {
     renderContent(el, binding, vnode)
   },
-  updated(el: Element, binding: any, vnode: any) {
+  updated(el: Element, binding: DirectiveBinding, vnode: any) {
     // 比较新旧值，避免死循环更新
     if (hasBindingChanged(binding)) {
       renderContent(el, binding, vnode)

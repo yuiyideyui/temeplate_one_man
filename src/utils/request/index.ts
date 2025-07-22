@@ -44,22 +44,28 @@ service.interceptors.response.use(
   },
 )
 
-const request = (data: any): Promise<ApiResponse> => {
+const request = (data: any): Promise<Api.Response> => {
   return service(data)
 }
-export const get = <T = ApiResponse>(url: string, params?: any): Promise<T> => {
+export const get = <T = Api.Response>(
+  url: string,
+  params?: any,
+): Promise<T> => {
   return service.get(url, { params })
 }
 
-export const post = <T = ApiResponse>(url: string, data?: any): Promise<T> => {
+export const post = <T = Api.Response>(url: string, data?: any): Promise<T> => {
   return service.post(url, data)
 }
 
-export const put = <T = ApiResponse>(url: string, data?: any): Promise<T> => {
+export const put = <T = Api.Response>(url: string, data?: any): Promise<T> => {
   return service.put(url, data)
 }
 
-export const del = <T = ApiResponse>(url: string, params?: any): Promise<T> => {
+export const del = <T = Api.Response>(
+  url: string,
+  params?: any,
+): Promise<T> => {
   return service.delete(url, { params })
 }
 // // GET

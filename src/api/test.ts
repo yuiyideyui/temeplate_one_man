@@ -8,7 +8,7 @@ export const getSub = () => {
   //   params: 'asmr',
   // })
   return get<
-    ApiResponse<{
+    Api.Response<{
       yui: string
     }>
   >('api/SubGet', {
@@ -20,7 +20,7 @@ export const getSubDeviceList = (data: {
   page?: number
   limit: number
 }): Promise<
-  ApiResponse<{
+  Api.Response<{
     count: number
     rows: any[]
   }>
