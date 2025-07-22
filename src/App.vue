@@ -1,19 +1,16 @@
-<script setup lang="ts">
+<script setup lang="tsx">
 import { RouterView } from 'vue-router'
-import { getSub } from '@/api/test'
-import { onMounted } from 'vue';
-onMounted(()=>{
-  getSub().then(res=>{
-    console.log('res',res);
-  })
-})
-// console.log('getSub()',await getSub());
+import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
+import Yui from './views/yui.vue'
 </script>
 
 <template>
-  <RouterView />
+  <div>
+    <RouterView />
+    <!-- <Yui></Yui>
+    <Yui></Yui> -->
+    <VueQueryDevtools></VueQueryDevtools>
+  </div>
 </template>
 
-<style scoped>
-
-</style>
+<style lang="less"></style>

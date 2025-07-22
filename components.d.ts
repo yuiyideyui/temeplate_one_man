@@ -7,13 +7,23 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    CardCom: typeof import('./src/components/cardCom/index.vue')['default']
     CenterPlane: typeof import('./src/components/plane/centerPlane.vue')['default']
-    CesiumThreeCom: typeof import('./src/components/cesiumThreeCom/cesiumThreeCom.vue')['default']
+    CustomTable: typeof import('./src/components/customTable/customTable.vue')['default']
+    CustomTable2: typeof import('./src/components/customTable/customTable2.vue')['default']
+    Echarts: typeof import('./src/components/echarts/index.vue')['default']
+    ElIcon: typeof import('element-plus/es')['ElIcon']
+    ElTable: typeof import('element-plus/es')['ElTable']
+    ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
+    LayerItem: typeof import('./src/components/MultiButton/LayerItem.vue')['default']
     LeftPlane: typeof import('./src/components/plane/leftPlane.vue')['default']
+    MultiButton: typeof import('./src/components/MultiButton/index.vue')['default']
+    PageHeader: typeof import('./src/components/PageHeader/index.vue')['default']
+    Pagination: typeof import('./src/components/Pagination/index.vue')['default']
+    Pop: typeof import('./src/components/pop/index.vue')['default']
     RightPlane: typeof import('./src/components/plane/rightPlane.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    TestCom: typeof import('./src/components/testCom.vue')['default']
   }
   export interface ComponentCustomProperties {
     vLoading: typeof import('element-plus/es')['ElLoadingDirective']
