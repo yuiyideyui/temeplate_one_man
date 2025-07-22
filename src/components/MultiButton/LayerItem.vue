@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits, ref, watch } from 'vue'
+import { defineEmits, ref } from 'vue'
 
 // ✅ 引用自身
 const props = defineProps<{

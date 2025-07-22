@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, defineEmits, watch, onUnmounted } from 'vue'
+import { ref, watch } from 'vue'
 import { ElPagination } from 'element-plus'
 const props = withDefaults(
   defineProps<{

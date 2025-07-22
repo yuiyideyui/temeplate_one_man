@@ -1,10 +1,10 @@
-import type { DirectiveBinding } from 'vue'
+import type { DirectiveBinding, VNode } from 'vue'
 
 export default {
-  mounted(el: Element, binding: DirectiveBinding, vnode: any) {
+  mounted(el: Element, binding: DirectiveBinding, vnode: VNode) {
     renderContent(el, binding, vnode)
   },
-  updated(el: Element, binding: DirectiveBinding, vnode: any) {
+  updated(el: Element, binding: DirectiveBinding, vnode: VNode) {
     // 比较新旧值，避免死循环更新
     if (hasBindingChanged(binding)) {
       renderContent(el, binding, vnode)
@@ -12,7 +12,7 @@ export default {
   },
 }
 
-function renderContent(el: Element, binding: any, vnode: any) {
+function renderContent(el: Element, binding: DirectiveBinding, vnode: VNode) {
   try {
     const [renderFn, currentValue, rowData] = binding.value
     const [_, oldValue, oldRowData] = binding.oldValue || []
