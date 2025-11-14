@@ -30,7 +30,7 @@
             class="layer-item"
           >
             <!-- 父级 -->
-            <div class="parent-item">
+            <label class="parent-item">
               <input
                 class="checkbox"
                 type="checkbox"
@@ -39,8 +39,12 @@
               />
               <!-- <span class="child-show" v-show="item.children" @click="toggleChildrenVisibility(item)">{{
                 item.isChildVisible ? '-' : '+' }}</span> -->
-              <span class="layer-name">{{ item.layerName }}</span>
-            </div>
+              <span
+                @click="handleParentCheckChange(item.id)"
+                class="layer-name cursor-pointer"
+                >{{ item.layerName }}</span
+              >
+            </label>
             <!-- 子级 -->
             <transition name="fade-slide">
               <div

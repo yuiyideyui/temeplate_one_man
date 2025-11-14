@@ -1,0 +1,16 @@
+@import 'normalize.css';
+:root {
+  --theme-background-color-dark: #000000;
+  --theme-background-color-light: #ffffff;
+}
+html {
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--theme-background-color-light);
+}
+html[data-theme='dark'] {
+  background-color: var(--theme-background-color-dark);
+}
+.cursor-pointer {
+  cursor: pointer;
+}
