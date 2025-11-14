@@ -10,16 +10,13 @@ import { usePlaneStore } from '@/stores/planeStore'
 const planeStore = usePlaneStore()
 const change = () => {
   if (planeStore.planeMsg.nowPlane.left == 'test') {
-    planeStore.changeNowPlane({
-      left: 'home',
-      right: 'home',
-      center: 'home',
-    })
+    planeStore.changeNowPlane(
+      planeStore.planePreSetWithTheme.oneTheme.home.plane,
+    )
   } else {
-    planeStore.changeNowPlane({
-      left: 'test',
-      right: 'test',
-    })
+    planeStore.changeNowPlane(
+      planeStore.planePreSetWithTheme.twoTheme.test.plane,
+    )
   }
 }
 </script>

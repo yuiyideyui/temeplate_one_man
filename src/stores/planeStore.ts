@@ -1,32 +1,69 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { addThemeToPlane } from './hook'
 export const usePlaneStore = defineStore('plane', () => {
   const planeMsg = ref<IplaneMsg>({
-    historyPlane: [
-      {
-        left: 'home',
-        center: 'home',
-        right: 'home',
-      },
-    ],
-    nowPlane: {
-      left: 'home',
-      center: 'home',
-      right: 'home',
-    },
-    theme: 'home',
+    historyPlane: [],
+    nowPlane: {},
+    theme: '',
   })
+  /**
+   * 预设的plane主题
+   *
+   */
+  const planePreSet = {
+    oneTheme: {
+      home: {
+        plane: {
+          left: 'home',
+          center: 'home',
+          right: 'home',
+        },
+      },
+    },
+    twoTheme: {
+      test: {
+        plane: {
+          left: 'test',
+        },
+      },
+    },
+  } as const
+  // 每一个plane下自动加上主题名称
+  //   plane: {
+  //       left: 'home',
+  //       center: 'home',
+  //       right: 'home',
+  //   }, => plane: {
+  //       left: 'home',
+  //       center: 'home',
+  //       right: 'home',
+  //       theme:'oneTheme'
+  //   },
+  const planePreSetWithTheme = addThemeToPlane(planePreSet)
 
-  /**改变当前的plane */
-  const changeNowPlane = (val: InowPlane) => {
-    planeMsg.value.nowPlane = val
-    planeMsg.value.historyPlane.push(val)
-  }
-
-  /**改变主题清空历史plane */
-  const changeTheme = (val: string) => {
-    planeMsg.value.theme = val
-    planeMsg.value.historyPlane = []
+  /**
+   * 改变当前的plane
+   * @param plane
+   * @param clearHistory 是否清除历史记录 -> 一般改theme时候清。默认false
+   * @param data 数据
+   */
+  const changeNowPlane = (
+    plane: InowPlane,
+    clearHistory: boolean = false,
+    data: any = undefined,
+  ) => {
+    planeMsg.value.nowPlane = plane
+    if (clearHistory) {
+      planeMsg.value.historyPlane = []
+    }
+    planeMsg.value.historyPlane.push({
+      ...plane,
+      data,
+    })
+    if (plane.theme) {
+      planeMsg.value.theme = plane.theme
+    }
   }
 
   /**返回上一个plane */
@@ -41,8 +78,8 @@ export const usePlaneStore = defineStore('plane', () => {
 
   return {
     planeMsg,
+    planePreSetWithTheme,
     changeNowPlane,
-    changeTheme,
     backPlane,
   }
 })

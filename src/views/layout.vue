@@ -99,9 +99,11 @@ const handleToggleGrayscale = (index: number) => {
   }
 }
 const test2CahangePlane = () => {
-  planeStore.changeNowPlane({
-    center: 'test2',
-  })
+  planeStore.changeNowPlane(
+    planeStore.planePreSetWithTheme.twoTheme.test.plane,
+    false,
+    {},
+  )
 }
 
 const footButtons = ref<Type_MultiButton>([

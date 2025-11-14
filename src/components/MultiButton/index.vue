@@ -54,7 +54,7 @@ const props = defineProps({
 })
 const buttonData = reactive(props.buttonData)
 interface ButtonData {
-  defaultImage: string
+  defaultImage: string | URL
   selectImg: string
   comTitle: string
   layerList: PopoverList[]
