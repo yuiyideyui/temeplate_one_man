@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { addThemeToPlane } from './hook'
+import router from '@/router'
 export const usePlaneStore = defineStore('plane', () => {
   const planeMsg = ref<IplaneMsg>({
     historyPlane: [],
@@ -63,6 +64,16 @@ export const usePlaneStore = defineStore('plane', () => {
     })
     if (plane.theme) {
       planeMsg.value.theme = plane.theme
+      // === 根据 plane.left/center/right 动态跳转路由 ===
+      const routesToPush: string[] = []
+      if (plane.left) routesToPush.push(plane.left)
+      if (plane.center) routesToPush.push(plane.center)
+      if (plane.right) routesToPush.push(plane.right)
+      if (routesToPush.length > 0) {
+        router.push({
+          path: '/' + plane.theme + '/' + routesToPush[0],
+        })
+      }
     }
   }
 

@@ -19,4 +19,8 @@ onMounted(() => {
   </div>
 </template>
 
-<style lang="less"></style>
+<style lang="less">
+* {
+  font-family: 'webfont';
+}
+</style>

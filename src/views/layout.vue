@@ -18,9 +18,8 @@
         <MultiButton
           v-for="(button, index) in footButtons"
           :key="index"
-          class="test"
           :buttonData="button"
-          @childChecked="handleChildChecked($event, index)"
+          @parentChecked="handleParentChecked($event, index)"
           @toggleGrayscale="handleToggleGrayscale(index)"
         />
       </div>
@@ -42,6 +41,7 @@ import {
   selectAllChildren,
   updateAllParentCheckedStatus,
 } from '@/components/MultiButton/selectFn'
+import { footButtons } from './layout'
 const planeStore = usePlaneStore()
 
 const handleChildChecked = (
@@ -58,6 +58,26 @@ const handleChildChecked = (
   }
   updateAllParentCheckedStatus(footButtons.value)
 }
+
+const handleParentChecked = (item: any, index: number) => {
+  // if(item !== '全选'){
+  //   const allChecked = footButtons.value[index].layerList
+  //     .filter(item => item.layerName !== '全选') // 筛选卡口和信号机
+  //     .every(item => item.checked === true); // 判断它们的 checked 是否都为 true
+  //   footButtons.value[index].layerList[0].checked = !!allChecked;
+  // }
+  if (footButtons.value[index].layerList.every(e => !e.checked)) {
+    footButtons.value[index].disabled = true
+  }
+  footButtons.value[index].layerList.forEach(e => {
+    if (e.layerName === item) {
+      if (e.checked) {
+        footButtons.value[index].disabled = false
+      } else {
+      }
+    }
+  })
+}
 const handleToggleGrayscale = (index: number) => {
   if (
     footButtons.value[index].default === 'allChecked' &&
@@ -68,34 +88,8 @@ const handleToggleGrayscale = (index: number) => {
     })
   }
   if (footButtons.value[index].comTitle === '路网') {
-    // footButtons.value[index].disabled ? useCloseRoad() : useInitRoad()
   } else if (footButtons.value[index].comTitle === '设备') {
-    if (!footButtons.value[index].disabled) {
-      footButtons.value[index].layerList.forEach((item, index) => {
-        if (item.checked) {
-          if (item.showFn) {
-            item.showFn()
-          }
-        } else {
-          if (item.closeFn) {
-            item.closeFn()
-          }
-        }
-      })
-    } else {
-      footButtons.value[index].layerList.forEach((item, index) => {
-        if (item.closeFn) {
-          item.closeFn()
-        }
-      })
-    }
   } else if (footButtons.value[index].comTitle === '交叉口') {
-    if (footButtons.value[index].disabled) {
-      // dialogStore.dialog_com = ''
-      // useCloseJiaochakou()
-    } else {
-      // useShowJiaochakou()
-    }
   }
 }
 const test2CahangePlane = () => {
@@ -105,151 +99,6 @@ const test2CahangePlane = () => {
     {},
   )
 }
-
-const footButtons = ref<Type_MultiButton>([
-  {
-    comTitle: '路网',
-    defaultImage: new URL(
-      `@/assets/image/greenRoadPlanning/7_1.png`,
-      import.meta.url,
-    ).href,
-    disabled: false,
-    selectImg: new URL(
-      `@/assets/image/greenRoadPlanning/7.png`,
-      import.meta.url,
-    ).href,
-    layerList: [],
-  },
-  {
-    disabled: true,
-    comTitle: '设备',
-    defaultImage: new URL(
-      `@/assets/image/greenRoadPlanning/8_1.png`,
-      import.meta.url,
-    ).href,
-    selectImg: new URL(
-      `@/assets/image/greenRoadPlanning/8.png`,
-      import.meta.url,
-    ).href,
-    default: 'allChecked',
-    layerList: [
-      {
-        id: '全选',
-        type: 14,
-        checked: false,
-        layerName: '全选',
-        showFn: item => {
-          if (item) {
-            selectAllChildren(item)
-          }
-        },
-        closeFn: item => {
-          if (item) {
-            selectAllChildren(item)
-          }
-        },
-        isChildVisible: true,
-        children: [
-          {
-            id: '全选',
-            type: 14,
-            checked: false,
-            layerName: '全选',
-            showFn: item => {
-              if (item) {
-                selectAllChildren(item)
-              }
-            },
-            closeFn: item => {
-              if (item) {
-                selectAllChildren(item)
-              }
-            },
-            children: [
-              {
-                id: '全选',
-                type: 14,
-                checked: false,
-                layerName: '全选',
-                showFn: item => {
-                  if (item) {
-                    selectAllChildren(item)
-                  }
-                },
-                closeFn: item => {
-                  if (item) {
-                    selectAllChildren(item)
-                  }
-                },
-              },
-              {
-                id: '卡口',
-                type: 14,
-                checked: true,
-                layerName: '卡口',
-                showFn: () => {},
-                closeFn: () => {},
-              },
-              {
-                id: '信号机',
-                type: 14,
-                checked: true,
-                layerName: '信号机',
-                // showFn: useShowXinhaoji,
-                // closeFn: useCloseXinhaoji,
-              },
-            ],
-          },
-          {
-            id: '卡口',
-            type: 14,
-            checked: true,
-            layerName: '卡口',
-            showFn: () => {},
-            closeFn: () => {},
-          },
-          {
-            id: '信号机',
-            type: 14,
-            checked: true,
-            layerName: '信号机',
-            // showFn: useShowXinhaoji,
-            // closeFn: useCloseXinhaoji,
-          },
-        ],
-      },
-      {
-        id: '卡口',
-        type: 14,
-        checked: true,
-        layerName: '卡口',
-        showFn: () => {},
-        closeFn: () => {},
-      },
-      {
-        id: '信号机',
-        type: 14,
-        checked: true,
-        layerName: '信号机',
-        // showFn: useShowXinhaoji,
-        // closeFn: useCloseXinhaoji,
-      },
-    ],
-  },
-  {
-    disabled: true,
-    comTitle: '交叉口',
-    defaultImage: new URL(
-      `@/assets/image/greenRoadPlanning/9_1.png`,
-      import.meta.url,
-    ).href,
-    selectImg: new URL(
-      `@/assets/image/greenRoadPlanning/9.png`,
-      import.meta.url,
-    ).href,
-    layerList: [],
-  },
-])
 
 const fullEl = ref<HTMLElement | null>(null)
 const { toggle, isFullscreen } = useFullscreen(fullEl)

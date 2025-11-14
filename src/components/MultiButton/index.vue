@@ -24,15 +24,49 @@
           :class="{ show: showPopover }"
           v-if="vif_layerList"
         >
-          <LayerItem
+          <div
+            v-for="(item, index) in layerList"
+            :key="index"
             class="layer-item"
-            v-for="item in layerList"
-            :key="item.id"
-            :item="item"
-            :parent="layerList"
-            @check-change="handleChildCheckChange"
           >
-          </LayerItem>
+            <!-- 父级 -->
+            <div class="parent-item">
+              <input
+                class="checkbox"
+                type="checkbox"
+                v-model="item.checked"
+                @change="handleParentCheckChange(item.id)"
+              />
+              <!-- <span class="child-show" v-show="item.children" @click="toggleChildrenVisibility(item)">{{
+                item.isChildVisible ? '-' : '+' }}</span> -->
+              <span class="layer-name">{{ item.layerName }}</span>
+            </div>
+            <!-- 子级 -->
+            <transition name="fade-slide">
+              <div
+                v-if="
+                  item.isChildVisible &&
+                  item.children &&
+                  item.children.length > 0
+                "
+                class="children-list"
+              >
+                <div
+                  v-for="(child, childIndex) in item.children"
+                  :key="childIndex"
+                  class="child-item"
+                >
+                  <input
+                    class="checkbox"
+                    type="checkbox"
+                    v-model="child.checked"
+                    @change="handleChildCheckChange(item, child)"
+                  />
+                  <span>{{ child.layerName }}</span>
+                </div>
+              </div>
+            </transition>
+          </div>
         </div>
       </div>
     </div>
@@ -41,41 +75,33 @@
 
 <script setup lang="ts">
 import { computed, ref, toRefs, reactive } from 'vue'
-import LayerItem from './LayerItem.vue'
+
 // 接收 props
 const props = defineProps({
-  // defaultImage: { type: String, default: '' },
-  // selectImg: { type: String, default: '' },
-  // comTitle: { type: String, default: '暂无标题' },
-  width: { type: String, default: '500px' },
-  height: { type: String, default: '500px' },
-  // layerList: { type: Array as PropType<PopoverList[]>, default: () => [] },
+  width: { type: String, default: '26.0417vw' },
+  height: { type: String, default: '26.0417vw' },
   buttonData: { type: Object as () => ButtonData, default: () => {} },
 })
 const buttonData = reactive(props.buttonData)
 interface ButtonData {
-  defaultImage: string | URL
+  defaultImage: string
   selectImg: string
   comTitle: string
   layerList: PopoverList[]
-  disabled?: boolean
+  disabled: boolean
 }
-const {
-  defaultImage,
-  selectImg,
-  comTitle,
-  layerList,
-  disabled = ref(false),
-} = toRefs(buttonData)
+const { defaultImage, selectImg, comTitle, layerList, disabled } =
+  toRefs(buttonData)
 
 interface PopoverList {
   id: string
   layerName: string
   checked?: boolean
   children?: Array<any>
-  isShow: boolean
+  isShow?: boolean
   type: number
   img?: string
+  imgType: number
   isChildVisible?: boolean
 }
 const emit = defineEmits(['toggleGrayscale', 'parentChecked', 'childChecked'])
@@ -127,15 +153,15 @@ const hideBubble = () => {
     hoverTimer.value = undefined
   }
   hideTimer.value = setTimeout(() => {
-    showPopover.value = true
+    showPopover.value = false
   }, 150) // 延迟隐藏，避免闪烁
 }
 
 const handleParentCheckChange = (item: any) => {
   emit('parentChecked', item)
 }
-const handleChildCheckChange = (item: any, parent: any) => {
-  emit('childChecked', { item, parent })
+const handleChildCheckChange = (item: any, child: any) => {
+  emit('childChecked', { item, child })
 }
 
 const toggleChildrenVisibility = (item: PopoverList) => {
@@ -185,7 +211,7 @@ const toggleChildrenVisibility = (item: PopoverList) => {
       }
     }
 
-    :deep(.custom-popover) {
+    .custom-popover {
       box-sizing: border-box;
       font-family: 'webfont-regular', sans-serif;
       position: absolute;
@@ -197,7 +223,7 @@ const toggleChildrenVisibility = (item: PopoverList) => {
       border: 0.5px solid #33d4e9;
       border-radius: 5px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-      padding: 10px 12px 3px 12px;
+      padding: 10px 12px 0 12px;
       color: #ffffff;
       opacity: 0;
       max-height: 0;
@@ -212,9 +238,8 @@ const toggleChildrenVisibility = (item: PopoverList) => {
       flex-direction: column;
       align-items: flex-start;
       white-space: nowrap;
-      min-width: 106px;
+      width: 106px;
       margin-bottom: 10px;
-      gap: 3px;
 
       &.show {
         opacity: 1;
@@ -230,18 +255,15 @@ const toggleChildrenVisibility = (item: PopoverList) => {
         background-size: contain;
         background-repeat: no-repeat;
         cursor: pointer;
-        width: 14px;
-        height: 14px;
+        width: 11px;
+        height: 11px;
         border: 1px solid #33d4e9;
         /* 边框颜色 */
         border-radius: 3px;
         background-color: #001622;
-        margin-right: 5px;
         /* 默认未选中的背景图片 */
         background-image: url('@/assets/image/greenRoadPlanning/14.png');
-        &.indeterminateImg {
-          background-image: url('@/assets/image/greenRoadPlanning/13.png');
-        }
+
         &:checked {
           /* 选中状态的背景图片 */
           background-image: url('@/assets/image/greenRoadPlanning/15.png');
@@ -257,11 +279,8 @@ const toggleChildrenVisibility = (item: PopoverList) => {
         flex-direction: column;
         /* 子项在父项下方 */
         // margin-bottom: 8px;
-        gap: 3px;
-        .item-header {
-          display: flex;
-          align-items: center;
-        }
+        gap: 8px;
+
         .parent-item {
           display: flex;
           align-items: center;
@@ -304,7 +323,6 @@ const toggleChildrenVisibility = (item: PopoverList) => {
           margin-left: 30px;
           /* 子级缩进 */
           width: auto;
-          gap: 3px;
 
           /* 自动扩展宽度 */
           .child-item {
