@@ -9,10 +9,19 @@ declare module 'vue' {
   export interface GlobalComponents {
     CardCom: typeof import('./src/components/cardCom/index.vue')['default']
     CenterPlane: typeof import('./src/components/plane/centerPlane.vue')['default']
+    CustomElTable: typeof import('./src/components/customTable/CustomElTable.vue')['default']
+    CustomElTableColumn: typeof import('./src/components/customTable/CustomElTableColumn.vue')['default']
+    CustomForm: typeof import('./src/components/customForm.vue')['default']
     CustomTable: typeof import('./src/components/customTable/customTable.vue')['default']
     CustomTable2: typeof import('./src/components/customTable/customTable2.vue')['default']
     Echarts: typeof import('./src/components/echarts/index.vue')['default']
+    ElButton: typeof import('element-plus/es')['ElButton']
+    ElDatePicker: typeof import('element-plus/es')['ElDatePicker']
     ElIcon: typeof import('element-plus/es')['ElIcon']
+    ElPopover: typeof import('element-plus/es')['ElPopover']
+    ElTable: typeof import('element-plus/es')['ElTable']
+    ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
+    ElTag: typeof import('element-plus/es')['ElTag']
     LayerItem: typeof import('./src/components/MultiButton/LayerItem.vue')['default']
     LeftPlane: typeof import('./src/components/plane/leftPlane.vue')['default']
     MultiButton: typeof import('./src/components/MultiButton/index.vue')['default']
@@ -22,5 +31,8 @@ declare module 'vue' {
     RightPlane: typeof import('./src/components/plane/rightPlane.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+  }
+  export interface ComponentCustomProperties {
+    vLoading: typeof import('element-plus/es')['ElLoadingDirective']
   }
 }
