@@ -9,7 +9,8 @@ declare module 'vue' {
   export interface GlobalComponents {
     CardCom: typeof import('./src/components/cardCom/index.vue')['default']
     CenterPlane: typeof import('./src/components/plane/centerPlane.vue')['default']
-    CustomElTable: typeof import('./src/components/customTable/CustomElTable.vue')['default']
+    CustomElColumn: typeof import('./src/components/customTable/customElColumn.vue')['default']
+    CustomElTable: typeof import('./src/components/customTable/customElTable.vue')['default']
     CustomElTableColumn: typeof import('./src/components/customTable/CustomElTableColumn.vue')['default']
     CustomForm: typeof import('./src/components/customForm.vue')['default']
     CustomTable: typeof import('./src/components/customTable/customTable.vue')['default']
