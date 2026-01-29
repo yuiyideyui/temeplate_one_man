@@ -3,6 +3,14 @@
   <head>
     <meta charset="UTF-8">
     <link rel="icon" href="/favicon.ico">
+    <script type="module">
+      // 2. 在脚本里直接 import 样式和逻辑
+      import '@bprogress/core/css'; 
+      import { BProgress } from '@bprogress/core';
+      
+      console.log('Progress starting...');
+      BProgress.start();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vite App</title>
   </head>

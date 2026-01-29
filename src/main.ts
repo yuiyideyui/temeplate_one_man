@@ -18,7 +18,7 @@ import transitionText from './Directives/vTransitionText'
 import jsxDom from './Directives/vJsxDom'
 const app = createApp(App)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-  app.component(key, component)
+    app.component(key, component)
 }
 app.directive('jsxTable', jsxTable)
 app.directive('transition-text', transitionText)
