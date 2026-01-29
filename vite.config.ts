@@ -11,37 +11,38 @@ import UnoCSS from 'unocss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    vue(),
-    vueDevTools(),
-    UnoCSS(),
-    AutoImport({
-      resolvers: [ElementPlusResolver()],
-    }),
-    Components({
-      resolvers: [ElementPlusResolver()],
-    }),
-    vueJsx(),
-  ],
-  css: {
-    preprocessorOptions: {
-      less: {
-        additionalData: `@import "@/assets/css/var.less";`, // 引入全局 LESS 变量
-      },
+    plugins: [
+        vue(),
+        vueDevTools(),
+        UnoCSS(),
+        AutoImport({
+            resolvers: [ElementPlusResolver()]
+        }),
+        Components({
+            resolvers: [ElementPlusResolver()]
+        }),
+        vueJsx()
+    ],
+    css: {
+        preprocessorOptions: {
+            less: {
+                additionalData: `@import "@/assets/css/var.less";` // 引入全局 LESS 变量
+            }
+        }
     },
-  },
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    resolve: {
+        alias: {
+            '@': fileURLToPath(new URL('./src', import.meta.url))
+        }
     },
-  },
-  server: {
-    proxy: {
-      '/api': {
-        target: 'http://localhost:30002',
-        changeOrigin: true,
-        prependPath: true,
-      },
-    },
-  },
+    server: {
+        host: true,
+        proxy: {
+            '/api': {
+                target: 'http://localhost:30002',
+                changeOrigin: true,
+                prependPath: true
+            }
+        }
+    }
 })

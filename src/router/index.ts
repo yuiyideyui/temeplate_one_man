@@ -7,6 +7,11 @@ const staticRouter = [
         component: () => import('@/views/yui.vue')
     },
     {
+        path: '/login',
+        name: 'login',
+        component: () => import('@/views/login/login.vue')
+    },
+    {
         path: '/:pathMatch(.*)*', // 匹配剩余的所有路径
         name: 'layout',
         component: () => import('@/views/layout.vue')
